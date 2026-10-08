@@ -95,6 +95,7 @@ Independent cold read (Claude subagent; Codex not installed):
 - Basket re-validation: at order creation the server re-checks that the vendor is open and under its cap and that items and prices are current; a changed price shows the new total for the customer to confirm.
 - Duplicate-charge prevention (CEO-E6, moved up from Phase 2): one order per basket, reused on retry or reload with the same processor reference so a second charge is rejected; a new order with an identical basket from the same phone within 90 seconds is blocked.
 - Payout bank account changes (CEO-S2): the new account must pass the bank account-name match against the vendor's BVN name and takes effect after 48 hours; SMS (and email if present) at request and activation with a one-tap "this wasn't me" freeze; settlements during the hold still go to the old account.
+- Pause switch (CEO-O1): a global flag and a per-vendor flag the founder can flip from an admin page; paused order pages show "temporarily not taking orders"; in-flight orders and refunds continue; every flip is written to the audit log.
 - Refund execution (CEO-R3): every refund goes into a queue and is retried with backoff for up to 6 hours. The customer gets "refund started" by SMS, and a second SMS only when the processor confirms the refund. If it still fails after 6 hours, the founder is alerted with the order ID, with a 1-business-day target.
 - Reconciliation reliability (CEO-R2): the nightly job records a heartbeat when it finishes; if none exists by 08:30 Lagos time the founder gets an SMS and email. Each run reconciles every unreconciled day, not just yesterday, so a missed night catches up. The 09:00 payout SMS waits until reconciliation has completed.
 - Vendor payout ledger: every order, fee, refund and settlement time.
@@ -391,6 +392,8 @@ Invariants held by every decision: Sàrè never holds customer funds; customers 
 | CEO-P2 eng review | Section 3: SMS pumping / OTP abuse | Unspecified | Per-number and per-IP OTP rate limits, SMS spend cap and alert | unresolved | Pending for /plan-eng-review |
 | CEO-P3 eng review | Section 3: audit trail for founder money actions | Unspecified | Append-only log of cap raises, write-offs, manual refunds, badge decisions | unresolved | Pending for /plan-eng-review |
 | CEO-P4 eng review | Section 3: link and data access | Unspecified | Unguessable order/status tokens; per-vendor Postgres row policies with tests; private upload bucket with type/size checks | unresolved | Implementation owner must prove; pending for /plan-eng-review |
+| CEO-O1 founder | Section 9: no manual stop for money flows | Auto-pause only on reserve exhaustion | Global + per-vendor pause flags, audit-logged | approved | D19: user chose "A: Global + per-vendor pause"; scope: Phase 1 ops |
+| CEO-P5 eng review | Section 8: observability | Unspecified | Structured logs per state change; day-one metrics (paid orders, % settled on committed day, refund queue depth, webhook signature failures, SMS spend, vendor debt); alerts (signature failures >5/h, SMS spend spike, reserve <₦100,000); one-page runbook per alert | unresolved | Pending for /plan-eng-review |
 | CEO-E5 founder | Expansion: one-tap reorder | Not in plan | SMS after delivery with "order again" link prefilled with last basket | deferred | D9: user chose "Defer to TODOS.md"; scope: revisit after Gate 1 |
 
 ### NOT in scope (this review)
@@ -411,3 +414,167 @@ Invariants held by every decision: Sàrè never holds customer funds; customers 
 | Hour 6+, polish and tests | Nightly reconciliation and 09:00 jobs need a scheduler (Supabase cron or Vercel cron) and timezone handling (Africa/Lagos, public holidays). CI size and 2G Lighthouse checks for the static order pages. NDPA consent screens and data-export flow. | 3-4 days / 3-4 hrs |
 
 Feasibility blockers: Gate 0 checks (a)-(f). Pending implementation choices for /plan-eng-review: scheduler, webhook storage and idempotency design, reconciliation matching rule, late-payment-after-timeout handling.
+
+Approval readiness: PASS — checked CEO-D1 (D2), CEO-D2 (D3), CEO-D3 (D4), CEO-E1 (D5), CEO-E1r (agent refinement under D5), CEO-E2 (D6), CEO-E3 (D7), CEO-E4 (D8), CEO-E5 (D9, deferred), CEO-M1 (D10), CEO-E3a (D11), CEO-E4a (D12), CEO-R1 (D13), CEO-R2 (D14), CEO-R3 (D15), CEO-S1 (D16), CEO-S2 (D17), CEO-E6 (D18), CEO-O1 (D19). Pending (not accepted work): CEO-P1 to CEO-P5, owned by /plan-eng-review.
+
+## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
+
+### NOT in scope
+- Deferred: one-tap reorder SMS (CEO-E5, D9) — needs Gate 1 repeat data and NDPA marketing consent; in TODOS.md.
+- Moved to Phase 2 (deferred from Phase 1): LGA classification + NIPOST field (CEO-D1, D2), Tier 3 verification (CEO-D2, D3), impersonation guard (CEO-D3, D4); in TODOS.md.
+- Rejected: none.
+
+### What already exists
+- `src/pages/Vendor.tsx`: order queue and payout panel; reused as the vendor dashboard starting point.
+- `src/pages/Customer.tsx`: design reference only; the order page is rebuilt static under CEO-E4.
+- `src/lib/data.ts` `deliveryFee()`: demo-only; must not be used for real money (customer fees contradict the approved model).
+- `src/lib/sim.tsx` `assignRider`/`startLeg`: reference for Phase 3 dispatch.
+- `src/components/ui/*`: shadcn kit reused for the dashboard.
+
+### Dream state delta
+After Phase 1 Sàrè has the 12-month ideal's core: vendors in any state paid by processor split with a daily proof message and their own speed comparison. Still missing versus the ideal: discovery (Phase 2 marketplace), Sàrè riders (Phase 3), and a second ops person; profitability per order holds by construction (CEO-M1) but total profitability depends on volume.
+
+### Error & Rescue Registry (capability level)
+| Capability | Failure | Rescue | User sees | Verify owner |
+|---|---|---|---|---|
+| Checkout | abandon / decline | order expires at 30 min, no charge | "payment didn't go through" | eng review |
+| Checkout | payment after window | auto-refund + SMS (CEO-R1) | "refunded" SMS | eng review: delayed-webhook test |
+| Checkout | double tap / reload | order key reuse + 90s guard (CEO-E6) | single charge | eng review: double-tap test |
+| Webhook | forged / tampered | signature + re-fetch (CEO-S1) | nothing (rejected) | eng review: forged-webhook test |
+| Webhook | late / duplicate / out of order | idempotency + conditional updates | correct state | eng review |
+| Vendor alert | SMS lost | web push + dashboard; 10-min timeout refunds | refund | eng review |
+| Customer OTP | SMS lost | PENDING (CEO-P1) | can't order | eng review |
+| Refund | processor error | queue, 6h retry, founder alert (CEO-R3) | "started" then "confirmed" | eng review: forced-error test |
+| Reconciliation | job not run | heartbeat alert 08:30 + catch-up (CEO-R2) | payout SMS waits | eng review: skipped-run test |
+| Settlement | missing | Late flag, SMS, processor ticket ≤2 days | "Late" + updates | founder |
+| Bank change | takeover attempt | name-match + 48h hold + freeze (CEO-S2) | alert SMS | eng review |
+| Money bug in release | wrong charges/refunds | pause switch (CEO-O1) + redeploy | "not taking orders" | founder |
+
+### Failure Modes Registry
+```
+  CODEPATH (capability)   | FAILURE MODE              | RESCUED? | TEST?   | USER SEES?            | LOGGED?
+  ------------------------|---------------------------|----------|---------|-----------------------|--------
+  checkout                | late payment              | Y (R1)   | planned | refund SMS            | planned (P5)
+  checkout                | double charge             | Y (E6)   | planned | single charge         | planned (P5)
+  webhook                 | forged                    | Y (S1)   | planned | nothing               | planned + alert
+  order state             | accept vs timeout race    | Y        | planned | actual state          | planned
+  refund                  | processor failure         | Y (R3)   | planned | started/confirmed SMS | planned + alert
+  reconciliation          | job not run               | Y (R2)   | planned | payout SMS delayed    | heartbeat alert
+  OTP                     | SMS not delivered         | unknown  | unknown | can't sign in         | unknown (P1)
+  OTP                     | SMS pumping               | unknown  | unknown | none (cost)           | unknown (P2)
+  bank change             | account takeover          | Y (S2)   | planned | alert + freeze        | audit (P3)
+  release                 | money bug                 | Y (O1)   | planned | not taking orders     | audit (P3)
+```
+No row is RESCUED=N + TEST=N + silent: 0 CRITICAL GAPS. Two rows remain unknown pending CEO-P1 and CEO-P2.
+
+### Scope Expansion Decisions
+- Accepted: CEO-E1 (+E1r), CEO-E2, CEO-E3 (+E3a), CEO-E4 (+E4a), CEO-M1, CEO-R1, CEO-R2, CEO-R3, CEO-S1, CEO-S2, CEO-E6, CEO-O1.
+- Deferred: CEO-E5; CEO-D1, CEO-D2, CEO-D3 moved to Phase 2.
+- Skipped: none.
+- Full record: ~/.gstack/projects/RyanTargaryen337-SARE/ceo-plans/2026-10-08-sare-platform.md
+
+### Diagrams
+System architecture:
+```
+ Customer ─link─▶ static order/status pages ─JSON─┐      Vendor ─▶ React dashboard
+                                                   ▼               │
+            Supabase (Postgres + edge functions + cron) ◀──────────┘
+              │ webhooks(verified) ▲   │ API              │ SMS          │ KYC
+              ▼                    │   ▼                  ▼              ▼
+          Processor: hosted checkout, split subaccounts, refunds, settlement reports
+```
+Order state machine:
+```
+ PLACED ─paid(verified)▶ PAID ─accept≤10min▶ ACCEPTED ─▶ OUT_FOR_DELIVERY ─▶ DELIVERED ─2h▶ CLOSED
+   │30 min unpaid           │reject/timeout        │ETA+60 report / ETA+24h auto        │report
+   ▼                        ▼                      ▼                                     ▼
+ EXPIRED ─late pay▶ REFUNDED ◀──────────────── DISPUTED (24h vendor) ◀───────────────────┘
+```
+Deployment sequence: migrations (additive) → deploy functions → deploy pages → test-mode order end-to-end → enable live keys.
+Rollback: flip pause switch (O1) → redeploy previous build → additive migrations stay → unpause after a test-mode order passes.
+
+### Stale Diagram Audit
+Files touched by this plan contain no ASCII diagrams besides this document's own; none stale.
+
+## Implementation Tasks
+Synthesized from this review's findings (strategy-only depth: next verification or design actions and owners).
+
+- [ ] **T1 (P1, human: ~1 week / CC: ~2h of research support)** — Gate 0 — Run The Assignment and collect processor/SMS answers (a)-(f)
+  - Surfaced by: Step 0A / Gate 0 — payout thesis unverified; schema depends on (a)-(f)
+  - Files: to be determined
+  - Verify: 5 named vendor quotes, one late payout seen, (a)-(f) answered in writing
+- [ ] **T2 (P1, human: ~2h / CC: ~15min)** — planning — Run /plan-eng-review to resolve CEO-P1..P5 and lock schema, scheduler and webhook design
+  - Surfaced by: Sections 2, 3, 8 — pending rows CEO-P1 to CEO-P5
+  - Files: docs/designs/sare-platform.md
+  - Verify: eng review report with CEO-P1..P5 resolved
+- [ ] **T3 (P2, human: ~2h / CC: ~15min)** — planning — Run /plan-design-review for order page, status page and vendor ledger
+  - Surfaced by: Section 11 — UI scope, low-literacy and accessibility warnings
+  - Files: docs/designs/sare-platform.md
+  - Verify: design review report
+- [ ] **T4 (P2, human: ~1 day / CC: ~1h)** — pricing — Write commission() as a pure server-side function on integer kobo with boundary tests
+  - Surfaced by: Section 5 — demo deliveryFee() contradicts the approved fee model; float money
+  - Files: to be determined
+  - Verify: unit tests at ₦2,500 / ₦3,000 / ₦4,000 / ₦4,001 pass
+
+### Completion Summary
+```
+  +====================================================================+
+  |            MEGA PLAN REVIEW — COMPLETION SUMMARY                   |
+  +====================================================================+
+  | Mode selected        | SELECTIVE EXPANSION                         |
+  | System Audit         | demo-only code, no backend; no TODOs; 0 learnings |
+  | Step 0               | 3 Phase 1 items moved to Phase 2; 4 additions + 3 refinements; 1 deferral |
+  | Section 1  (Arch)    | 2 issues found (founder SPOF, processor SPOF) |
+  | Section 2  (Errors)  | 10 error paths mapped, 4 GAPS (3 fixed: R1-R3; 1 pending P1) |
+  | Section 3  (Security)| 7 issues found, 2 High severity (fixed: S1, S2) |
+  | Section 4  (Data/UX) | 5 edge cases mapped, 1 unhandled → fixed (E6) |
+  | Section 5  (Quality) | 3 issues found                              |
+  | Section 6  (Tests)   | Diagram produced, 0 gaps                    |
+  | Section 7  (Perf)    | 0 issues found                              |
+  | Section 8  (Observ)  | 4 gaps found (pending P5)                   |
+  | Section 9  (Deploy)  | 1 risk flagged (fixed: O1)                  |
+  | Section 10 (Future)  | Reversibility: 3/5, debt items: 2           |
+  | Section 11 (Design)  | 2 issues                                    |
+  +--------------------------------------------------------------------+
+  | NOT in scope         | written (4 items)                           |
+  | What already exists  | written                                     |
+  | Dream state delta    | written                                     |
+  | Error/rescue registry| 12 rows, 0 CRITICAL GAPS                    |
+  | Failure modes        | 10 total, 0 CRITICAL GAPS                   |
+  | TODOS.md updates     | 4 items (from Step 0 deferrals)             |
+  | Scope proposals      | 18 proposed, 14 accepted                    |
+  | CEO plan             | written                                     |
+  | Outside voice        | codex: unavailable (not installed; no bounded-wait tool for native fallback) |
+  | Lake Score           | 2/2 recommendations chose complete option   |
+  | Diagrams produced    | 5 (architecture, state machine, data flow, deploy, rollback) |
+  | Stale diagrams found | 0                                           |
+  | Unresolved decisions | 5 (listed below)                            |
+  +====================================================================+
+```
+
+### Unresolved Decisions
+- CEO-P1: customer OTP not delivered (owner: /plan-eng-review)
+- CEO-P2: SMS pumping / OTP rate limits (owner: /plan-eng-review)
+- CEO-P3: audit trail for founder money actions (owner: /plan-eng-review)
+- CEO-P4: unguessable links, row policies, upload checks (owner: /plan-eng-review)
+- CEO-P5: logs, metrics, alerts, runbooks (owner: /plan-eng-review)
+
+## GSTACK REVIEW REPORT
+
+| Review | Trigger | Why | Runs | Status | Findings |
+|--------|---------|-----|------|--------|----------|
+| CEO Review | `/plan-ceo-review` | Scope & strategy | 1 | ISSUES OPEN | 18 proposals, 14 accepted, 4 deferred |
+| Outside Review | codex (plan-review) | Independent 2nd opinion | 1 | unavailable | codex not installed; native fallback unavailable — no completed external review |
+| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 0 | — | — |
+| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
+
+- **OUTSIDE COVERAGE:** codex, plan-review phase, unavailable (CLI not installed; native fallback needs TaskOutput, not available in this session); no findings.
+- **VERDICT:** No reviews CLEAR yet; CEO review has 5 decisions handed to eng review — eng review required.
+
+**UNRESOLVED DECISIONS:**
+- CEO-P1: customer OTP not delivered (owner: /plan-eng-review)
+- CEO-P2: SMS pumping / OTP rate limits (owner: /plan-eng-review)
+- CEO-P3: audit trail for founder money actions (owner: /plan-eng-review)
+- CEO-P4: unguessable links, row policies, upload checks (owner: /plan-eng-review)
+- CEO-P5: logs, metrics, alerts, runbooks (owner: /plan-eng-review)
