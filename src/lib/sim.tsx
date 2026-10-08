@@ -1,65 +1,6 @@
-import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { AREAS, VENDORS, RIDER_NAMES, PRICING, dist, gridToKm, deliveryFee } from './data';
-
-export type OrderState =
-  | 'incoming' | 'accepted' | 'preparing' | 'ready'
-  | 'claimed' | 'picked' | 'delivered' | 'rejected';
-
-export interface OrderItem { name: string; qty: number; price: number; }
-
-export interface Order {
-  id: string;
-  code: string;
-  vendorId: string;
-  areaId: string; // customer area
-  items: OrderItem[];
-  subtotal: number;
-  fees: { delivery: number; service: number; small: number; total: number };
-  km: number;
-  surge: boolean;
-  state: OrderState;
-  placedAt: number; // tick
-  prepTicksLeft: number;
-  riderId: string | null;
-  isUser: boolean; // placed via customer app in this session
-  incomingSince: number;
-  readySince: number | null;
-  deliveredAt: number | null;
-}
-
-export interface Rider {
-  id: string;
-  name: string;
-  x: number; y: number;
-  fx: number; fy: number; tx: number; ty: number; legTicks: number; legTotal: number;
-  status: 'idle' | 'pickup' | 'dropoff';
-  orderId: string | null;
-  deliveries: number;
-  monthDeliveries: number;
-  earnings: number; // today, ₦
-  online: boolean;
-}
-
-interface SimState {
-  tick: number;
-  riders: Rider[];
-  orders: Order[];
-  surge: boolean;
-  events: string[];
-}
-
-interface SimApi extends SimState {
-  placeOrder: (vendorId: string, items: OrderItem[], areaId: string) => string;
-  acceptOrder: (id: string) => void;
-  rejectOrder: (id: string) => void;
-  markReady: (id: string) => void;
-  claimOrder: (orderId: string, riderId: string) => void;
-  pickupOrder: (orderId: string) => void;
-  completeOrder: (orderId: string) => void;
-  toggleRider: (riderId: string) => void;
-}
-
-const SimCtx = createContext<SimApi | null>(null);
+import { SimCtx, type Order, type OrderItem, type Rider, type SimApi, type SimState } from './useSim';
 
 const area = (id: string) => AREAS.find((a) => a.id === id)!;
 const vendor = (id: string) => VENDORS.find((v) => v.id === id)!;
@@ -134,7 +75,7 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
     return { tick: 0, riders, orders, surge: false, events: ['Network live — Lagos grid online'] };
   });
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => { stateRef.current = state; }, [state]);
 
   useEffect(() => {
     const iv = setInterval(() => {
@@ -219,14 +160,14 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
     return o.id;
   }, []);
 
-  const upd = useCallback((id: string, fn: (o: Order) => void) => {
-    setState((p) => ({ ...p, orders: p.orders.map((o) => { if (o.id === id) { const c = { ...o }; fn(c); return c; } return o; }) }));
+  const upd = useCallback((id: string, fn: (o: Order, tick: number) => void) => {
+    setState((p) => ({ ...p, orders: p.orders.map((o) => { if (o.id === id) { const c = { ...o }; fn(c, p.tick); return c; } return o; }) }));
   }, []);
 
   const acceptOrder = useCallback((id: string) => upd(id, (o) => { if (o.state === 'incoming') o.state = 'preparing'; }), [upd]);
   const rejectOrder = useCallback((id: string) => upd(id, (o) => { if (o.state === 'incoming') o.state = 'rejected'; }), [upd]);
-  const markReady = useCallback((id: string) => upd(id, (o) => {
-    if (o.state === 'preparing' || o.state === 'accepted') { o.state = 'ready'; o.readySince = stateRef.current.tick; o.prepTicksLeft = 0; }
+  const markReady = useCallback((id: string) => upd(id, (o, tick) => {
+    if (o.state === 'preparing' || o.state === 'accepted') { o.state = 'ready'; o.readySince = tick; o.prepTicksLeft = 0; }
   }), [upd]);
 
   const claimOrder = useCallback((orderId: string, riderId: string) => {
@@ -280,10 +221,4 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
 
   const api: SimApi = { ...state, placeOrder, acceptOrder, rejectOrder, markReady, claimOrder, pickupOrder, completeOrder, toggleRider };
   return <SimCtx.Provider value={api}>{children}</SimCtx.Provider>;
-}
-
-export function useSim(): SimApi {
-  const ctx = useContext(SimCtx);
-  if (!ctx) throw new Error('useSim outside provider');
-  return ctx;
 }

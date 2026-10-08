@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Bike, Store, Timer, Zap } from 'lucide-react';
-import { useSim } from '../lib/sim';
+import { useSim } from '../lib/useSim';
 import LagosMap from '../components/LagosMap';
 import type { View } from '../components/Nav';
 

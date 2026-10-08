@@ -20,4 +20,25 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // shadcn/ui files export variant helpers and hooks next to their components
+    files: ['src/components/ui/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': [
+        'error',
+        {
+          allowConstantExport: true,
+          allowExportNames: [
+            'badgeVariants',
+            'buttonGroupVariants',
+            'buttonVariants',
+            'navigationMenuTriggerStyle',
+            'toggleVariants',
+            'useFormField',
+            'useSidebar',
+          ],
+        },
+      ],
+    },
+  },
 ])

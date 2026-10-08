@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BellRing, Check, X, Flame, Wallet, TrendingUp, ClipboardList } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { VENDORS, AREAS, naira, PRICING } from '../lib/data';
-import { useSim } from '../lib/sim';
+import { useSim } from '../lib/useSim';
 
 const ease = [0.23, 0.34, 0.18, 1] as const;
 // The hub runs as "Jollof Junction" (v3)

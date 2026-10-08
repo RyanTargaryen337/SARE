@@ -1,4 +1,4 @@
-import { useSim } from '../lib/sim';
+import { useSim } from '../lib/useSim';
 import { AREAS, VENDORS, naira } from '../lib/data';
 import LagosMap from '../components/LagosMap';
 

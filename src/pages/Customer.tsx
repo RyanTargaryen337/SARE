@@ -4,7 +4,7 @@ import { Star, Clock, Plus, Minus, MapPin, CheckCircle2, Bike, ChefHat, Receipt,
 import { AREAS, VENDORS, naira, gridToKm, dist, deliveryFee } from '../lib/data';
 
 const _a = (id: string) => AREAS.find((x) => x.id === id)!;
-import { useSim, type Order } from '../lib/sim';
+import { useSim, type Order } from '../lib/useSim';
 import LagosMap from '../components/LagosMap';
 
 const ease = [0.23, 0.34, 0.18, 1] as const;

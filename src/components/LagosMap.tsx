@@ -1,5 +1,5 @@
 import { AREAS, VENDORS } from '../lib/data';
-import type { Rider, Order } from '../lib/sim';
+import type { Rider, Order } from '../lib/useSim';
 
 const ROADS: [string, string][] = [
   ['festac', 'surulere'], ['surulere', 'yaba'], ['surulere', 'oshodi'], ['oshodi', 'ikeja'],

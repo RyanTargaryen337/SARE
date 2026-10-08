@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bike, MapPin, Navigation, Wallet, Gift, CalendarCheck, PackageCheck, Zap } from 'lucide-react';
 import { VENDORS, AREAS, naira, PRICING, gridToKm, dist } from '../lib/data';
-import { useSim } from '../lib/sim';
+import { useSim } from '../lib/useSim';
 import LagosMap from '../components/LagosMap';
 
 const ease = [0.23, 0.34, 0.18, 1] as const;
