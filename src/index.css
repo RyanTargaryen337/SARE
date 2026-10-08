@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 168 92% 9%;
+    --foreground: 36 32% 87%;
+    --card: 168 60% 12%;
+    --card-foreground: 36 32% 87%;
+    --popover: 168 92% 7%;
+    --popover-foreground: 36 32% 87%;
+    --primary: 16 94% 57%;
+    --primary-foreground: 168 92% 8%;
+    --secondary: 166 44% 22%;
+    --secondary-foreground: 36 32% 87%;
+    --muted: 166 44% 20%;
+    --muted-foreground: 33 17% 67%;
+    --accent: 16 94% 57%;
+    --accent-foreground: 168 92% 8%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 166 35% 24%;
+    --input: 166 35% 24%;
+    --ring: 16 94% 57%;
+    --radius: 0.625rem;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply bg-forest-deep text-cream font-body antialiased;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(233, 223, 211, 0.018) 0 1px, transparent 1px 3px);
+  }
+
+  ::selection { background: #F95E2C; color: #011E1A; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1F503F; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #F95E2C; }
+}
+
+@layer components {
+  .mono-label {
+    @apply font-mono text-[10px] uppercase tracking-[0.18em] text-cream-dim;
+  }
+  .panel {
+    @apply bg-forest border border-[#1a3f35] rounded-xl;
+  }
+  .hairline {
+    @apply border-[#1a3f35];
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+.pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track { animation: ticker-scroll 40s linear infinite; }
+.ticker-track:hover { animation-play-state: paused; }
