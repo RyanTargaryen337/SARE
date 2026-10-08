@@ -384,3 +384,13 @@ Invariants held by every decision: Sàrè never holds customer funds; customers 
 - R3-9 (impersonation guard undefined): deferred with the guard to Phase 2 (CEO-D3); define it there.
 - Fixed in the plan text after the office-hours review (before approval): R3-1 (commission maths), R3-2 (delivered-mark loophole), R3-3 (same-night wording), R3-4 (Assignment and Gate 0 criteria), R3-5 (settlement metric), R3-10 (Gate 0 checks).
 - Still open: R3-6 (Phase 2 fee model), R3-8 (unsourced market figures), R3-11 (debt-cap averaging window and new-vendor floor), R3-12 (reserve exhaustion handling), R3-13 (refused pay-at-door payouts), R3-14 (falsification cohort vendors with no first order), R3-15 (candidate cities vs data-chosen zone).
+
+### Implementation sequence (CEO review 0I, Phase 1 only)
+| When | What the implementer needs or will hit | Effort (human / CC + gstack) |
+|---|---|---|
+| Hour 1, foundations | Gate 0 answers (a)-(f) must exist first: processor choice, settlement timing, split-refund behaviour, per-transaction splits, fees, SMS cost. Without them the schema for ledger, debt and fees can't be fixed. Supabase project region, processor test-mode keys, SMS sandbox. | 1 day / 1 hr |
+| Hours 2-3, core logic | Order state machine (placed → accepted/rejected/timeout → out for delivery → delivered/disputed → refunded) with the ETA clocks; fee calculation (5% of total, ₦200 minimum) as one pure function with tests; vendor ledger with negative balances. Ambiguity to resolve: what happens to an order whose payment succeeds after the vendor's 10-minute window. | 4-5 days / 4-6 hrs |
+| Hours 4-5, integration | Processor webhooks (payment success, refund, settlement) are asynchronous and can arrive late, twice or out of order: idempotency keys on every webhook. Settlement reports may not include per-order detail; reconciliation may need to match on amounts and dates. Supabase phone sign-in does not support Termii natively. | 4-6 days / 4-6 hrs |
+| Hour 6+, polish and tests | Nightly reconciliation and 09:00 jobs need a scheduler (Supabase cron or Vercel cron) and timezone handling (Africa/Lagos, public holidays). CI size and 2G Lighthouse checks for the static order pages. NDPA consent screens and data-export flow. | 3-4 days / 3-4 hrs |
+
+Feasibility blockers: Gate 0 checks (a)-(f). Pending implementation choices for /plan-eng-review: scheduler, webhook storage and idempotency design, reconciliation matching rule, late-payment-after-timeout handling.
