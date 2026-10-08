@@ -66,12 +66,12 @@ Independent cold read (Claude subagent; Codex not installed):
 **Gate 0 — before any Phase 1 code.** This is The Assignment. Pass condition: 5+ named vendors raised payout delays without being prompted, at least one showed a late or stuck incumbent payout, and 5 agreed to run a week of their own orders through a manually set-up processor payment link. In the same week, confirm with Paystack and Flutterwave (a) the actual subaccount settlement timing including weekends and public holidays, (b) how refunds and chargebacks on split payments are debited, (c) whether a per-subaccount settlement schedule exists, (d) whether per-transaction split amounts are supported (if not, vendor debt is recovered only by vendor transfer, with the debt cap enforced), and (e) transfer and USSD fee pricing. If Gate 0 fails, stop and revisit the wedge before building.
 
 **Phase 1 — Vendor payouts (all 36 states + FCT).** Ships the wedge.
-- Backend: Postgres (Supabase) with the location model from day one: state → LGA → district, with LGA classification (urban, semi-urban, rural, riverine) from a reference dataset such as nigeria-geo-core. NIPOST digital postcode field reserved.
+- Backend: Postgres (Supabase) with state → LGA → area/landmark text from day one. (LGA classification and the NIPOST postcode field move to Phase 2, CEO-D1.)
 - Vendor onboarding, tiered. Every tier gets the same settlement timing (the processor's schedule); tiers only change the weekly sales cap, which Sàrè enforces by refusing new checkouts once a vendor reaches it, never by holding or delaying money:
   - Tier 1 (unregistered): phone OTP + BVN + bank account-name match. Weekly sales cap (starting value ₦150,000, set in config).
   - Tier 2 (registered): adds CAC lookup + TIN. Higher cap (starting value ₦1,000,000).
-  - Tier 3 (trusted): adds address verification (geotagged photo or field visit) + 30 clean orders. No cap; priority placement once the Phase 2 marketplace exists.
-  - Impersonation guard: names matching a known brand go to manual review.
+  - Tier 3 (trusted): moved to Phase 2 (CEO-D2), together with the priority placement it unlocks.
+  - Impersonation guard: moved to Phase 2 (CEO-D3), when vendor listings become publicly searchable.
 - Revenue (Phase 1): the customer pays the vendor's menu price plus the vendor's delivery fee, nothing else. Sàrè's fee is a commission deducted from the vendor's share inside the split: 5% of the full amount charged (food plus the vendor's delivery fee, since the processor fee is charged on the full amount), with a minimum of ₦150 per order on every payment method. Starting rate; confirmed or changed during Gate 0. Sàrè bears the processor's transaction fee out of its commission (split "bearer" set to the main account), so the vendor's net is exactly total minus the commission. Check at published local card pricing of about 1.5% + ₦100 (₦100 waived under ₦2,500, capped at ₦2,000): ₦2,000 → ₦150 commission vs ₦30 fee; ₦2,600 → ₦150 vs ₦139; ₦3,000 → ₦150 vs ₦145 (the thinnest point); ₦5,000 → ₦250 vs ₦175; ₦50,000 → ₦2,500 vs ₦850. Commission is never below the card fee at any amount: below about ₦3,333 the ₦150 minimum covers the fee, and above about ₦2,857 5% exceeds it. Transfer and USSD fees are checked against the same rule in Gate 0. On refunded orders Sàrè keeps no commission and the processor fee is usually not returned: if the refund is the vendor's fault (rejection after payment, timeout, non-delivery, wrong order) the fee is added to the vendor's negative balance; if the customer cancels before acceptance, Sàrè absorbs it, which the Phase 2 refund-rate target (under 3%) keeps small. The customer receipt shows it as "Sàrè fee (paid by vendor)" so prices are never inflated to hide it. Marketplace orders from Phase 2 use the 25/20/15% tiers.
 - Menu with the vendor's own prices.
 - Order lifecycle:
@@ -91,12 +91,17 @@ Independent cold read (Claude subagent; Codex not installed):
     - **Write-off:** debt unrecovered after 60 days, or on vendor churn, is absorbed by Sàrè and written off, and the vendor account is suspended.
 - Settlement: processor split payments, vendor share straight to their bank. Sàrè never touches the funds.
 - Vendor payout ledger: every order, fee, refund and settlement time.
+- Morning payout message (CEO-E1): every business day at 09:00 the reconciliation job sends each vendor with settled orders an SMS/WhatsApp: amount landed, bank and last 4 digits, order count, next settlement time. The same channel carries "Late" alerts.
+- Payout-delay tracker (CEO-E2): vendors can log when an incumbent platform actually paid them for a given day; the ledger shows the average days of cash flow gained with Sàrè. Feeds Gate 1 evidence.
+- In-store price badge (CEO-E3): at menu setup the vendor attests that order-link prices equal in-store prices; the order page shows the badge, and customers can report "price differs from in-store", which removes the badge pending founder review.
+- Order page performance budget (CEO-E4): the customer order route is a separate lightweight page (server-rendered HTML, minimal JS), under 150 KB on first load, readable before scripts finish, usable on 2G. A CI check fails the build above the budget. The vendor dashboard can keep the React/shadcn stack.
 - Missing settlement handling: a nightly job reconciles orders against processor settlement reports. At 09:00 the next business day after a settlement was due, unmatched orders show as "Late" on the vendor's ledger and the vendor gets an SMS. The ops owner (the founder in Phase 1) is alerted by SMS and email, opens a processor ticket the same day, and the target resolution is 2 business days, with an SMS update to the vendor at each step.
 - NDPA basics: granular consent screens, data export/delete request flow, named DPO. Raw BVN and NIN numbers are never stored by Sàrè: they are sent to the KYC provider, and Sàrè stores only the verification result, the provider reference and the last 4 digits. Verification results are kept while the vendor account is active plus 6 years for audit, then deleted. The database is hosted in the nearest available region (Supabase has no Nigerian region), with NDPA cross-border transfer covered by the provider's data processing agreement and standard contractual safeguards, recorded in the privacy notice.
 - **Gate 1 (after Phase 1, before Phase 2):** 20+ vendors processing real orders weekly through their links, at least 95% of orders settled on the committed day, and the nationwide falsification test: the cohort is the first 10 vendors to sign up outside Lagos, Abuja, Port Harcourt and Ibadan (the candidate Phase 2 cities, fixed before Phase 1 launch), and the cohort closes at the 10th such signup. At least 3 must still take orders through Sàrè in the fourth week after their own first order. If that test fails, nationwide signup is wrong: stop open signup outside planned zones and recruit vendors zone by zone.
 
 **Phase 2 — Marketplace and customer trust (first dense zone).**
 - Pick the first zone from Phase 1 data (where vendors and orders cluster), not by assumption.
+- Moved from Phase 1 by the CEO review: LGA classification (urban, semi-urban, rural, riverine) and NIPOST postcode field (CEO-D1); Tier 3 vendor verification with address check and priority placement (CEO-D2); impersonation guard with a defined brand list, match rule and review SLA (CEO-D3).
 - Customer browse/search across vendors in the zone; transparent checkout (food → delivery → service fee → total).
 - Customer trust tiers: new = prepaid only; established (4+ orders, <5% cancellations) = cash on delivery up to ₦10,000; trusted (10+ orders, <2%, no disputes) = up to ₦30,000. Cash on delivery is only offered when the vendor's own rider delivers; the cash goes to the vendor and never passes through Sàrè. Sàrè's commission on cash orders is recovered through the negative-balance policy in Phase 1 and counts toward the same per-vendor debt cap. Device binding, 90-day dormancy reset, address-level blacklisting, vendor flags feeding a shared reputation score.
 - Cancellation windows: full refund before vendor acceptance, partial before prep, none after; one-click full refund for confirmed app faults. Duplicate-order guard (same basket within 90 seconds).
@@ -349,3 +354,23 @@ Stop: CONVERGENCE
 
 > The impersonation guard line is unchanged.
 <!-- gstack:office-hours:concerns:end -->
+
+## CEO Review Ledger (/plan-ceo-review, 2026-10-08)
+
+Mode: SELECTIVE EXPANSION (user choice, D1; recommendation was SCOPE REDUCTION). Review depth: strategy-only (scope and phase ordering).
+
+Invariants held by every decision: Sàrè never holds customer funds; customers verify by phone OTP only; commission never below the processor fee; no physical cash on Sàrè-rider deliveries; Gate 0 before any Phase 1 code.
+
+| ID and owner | Contract and evidence | Current | Proposed | Status | Exact approval and scope |
+|---|---|---|---|---|---|
+| CEO-D1 founder | Phase 1 geo model (Recommended Approach, Phase 1 backend bullet) | State → LGA → district + LGA classification + reserved NIPOST postcode in Phase 1 | Keep state + LGA + area text in Phase 1; move LGA classification and NIPOST field to Phase 2 | deferred | D2: user chose "Defer to Phase 2"; scope: moved from Phase 1 to Phase 2 only |
+| CEO-D2 founder | Tier 3 vendor verification (Phase 1 onboarding) | Tier 3 address verification (geotagged photo or field visit) in Phase 1 | Move Tier 3 to Phase 2, when priority placement exists | deferred | D3: user chose "Defer to Phase 2"; scope: moved from Phase 1 to Phase 2 only |
+| CEO-D3 founder | Impersonation guard (Phase 1 onboarding; reviewer concern R3-9) | Undefined brand list/match rule in Phase 1 | Defer to Phase 2 marketplace, where listings are public and searchable | deferred | D4: user chose "Defer to Phase 2"; scope: moved from Phase 1 to Phase 2 only |
+| CEO-E1 founder | Expansion: morning payout message | Not in plan | Daily WhatsApp/SMS to each vendor: "₦X landed in <bank> ••1234 at 09:02" | approved | D5: user chose "Add to Phase 1"; scope: Phase 1 only |
+| CEO-E2 founder | Expansion: payout-delay tracker | Not in plan | Vendor logs incumbent payout dates; Sàrè shows days of cash flow gained | approved | D6: user chose "Add to Phase 1"; scope: Phase 1 only |
+| CEO-E3 founder | Expansion: in-store price badge | Not in plan | Vendor attests order-link prices equal in-store prices; badge shown on order page | approved | D7: user chose "Add to Phase 1"; scope: Phase 1 only |
+| CEO-E4 founder | Expansion: lite order page budget | Constraint says "web app must be light" (no number) | Order page under 150 KB first load, works on 2G, no JS framework on that route | approved | D8: user chose "Add to Phase 1"; scope: Phase 1 only |
+| CEO-E5 founder | Expansion: one-tap reorder | Not in plan | SMS after delivery with "order again" link prefilled with last basket | deferred | D9: user chose "Defer to TODOS.md"; scope: revisit after Gate 1 |
+
+### NOT in scope (this review)
+- One-tap reorder SMS (CEO-E5): deferred to TODOS.md; revisit with Gate 1 repeat-order data and an NDPA marketing-consent flow.
