@@ -487,6 +487,31 @@ Delete these demo strings from `src/pages/Vendor.tsx` before reuse: "NET AFTER 2
 ### Price badge (DR-4B)
 "✓ Same price as in shop" next to the vendor name; tapping it shows "Mama Nkechi promised these are her shop prices." A hidden badge shows nothing (no negative mark). The "Price different from shop?" report link appears only on the status page after the customer confirms delivery.
 
+### Type and sizing minimums (DR-5A)
+Static customer pages use the system font stack only (Roboto on Android), with no web fonts. Minimums on every screen: body 16px, labels 13px in sentence case (no uppercase letter-spacing), prices 18px bold, tap targets 48px, 8px spacing grid. The vendor dashboard may keep Space Grotesk for headings only, loaded after content. A full DESIGN.md comes later via /design-consultation.
+
+### SMS copy (DR-5B)
+Rules: GSM-7 characters only ("N" instead of ₦, "Sare" instead of Sàrè, no curly quotes or long dashes), 160 characters maximum so every message is one segment, every message names the vendor and the order code where relevant, one fixed sender ID, short links. A test fails the build if any template has a non-GSM-7 character or exceeds 160 characters. Placeholders in angle brackets are filled at send time and must keep the message under 160.
+
+| Trigger | Text | Chars |
+|---|---|---|
+| OTP code (customer) | `Your Sare code is 482913. It expires in 10 min. Never share it.` | 63 |
+| New order (vendor) | `Sare: New order #A12 N8,700 from 0803***4521. Accept within 10 min: sare.ng/v/A12` | 81 |
+| Order accepted (customer) | `Mama Nkechi accepted order #A12. Arriving by 2:40pm. Track: sare.ng/o/A12` | 73 |
+| On the way (customer) | `Order #A12 from Mama Nkechi is on the way. Track: sare.ng/o/A12` | 63 |
+| Delivered (customer) | `Order #A12 delivered. Not right? Tell us within 2 hours: sare.ng/o/A12` | 70 |
+| Not accepted / rejected (customer) | `Mama Nkechi could not take order #A12. Your N8,700 refund has started. Banks can take 1-5 working days.` | 103 |
+| Late payment refunded (customer) | `Your payment for order #A12 came after it expired. Refund of N8,700 started. Banks can take 1-5 working days.` | 109 |
+| Refund confirmed (customer) | `Refund of N8,700 for order #A12 is done. It should show in your bank within 1-5 working days.` | 93 |
+| Stuck order (vendor) | `Sare: Order #A12 is past its delivery time. Mark it delivered or the customer is refunded: sare.ng/v/A12` | 104 |
+| Payout sent (vendor, CEO-E1r) | `Sare: Paystack sent N48,200 for 14 orders to GTB ending 4821 on Tue 14 Oct. Next payout: Wed 15 Oct.` | 100 |
+| Payout late (vendor) | `Sare: Your payout for Mon 13 Oct is late. We have opened a ticket and will update you by Thu 16 Oct.` | 100 |
+| Ticket update (vendor) | `Sare: Update on your late payout for Mon 13 Oct: <status>. Next update by <date>.` | 81 |
+| Badge hidden (vendor) | `Sare: 2 customers said your prices differ from your shop. Badge hidden. Upload a menu photo within 48h: sare.ng/v/badge` | 119 |
+| Cap or debt block (vendor) | `Sare: Customers cannot order right now. Reason: <weekly limit reached / you owe N8,400>. See: sare.ng/v` | 103 |
+| Bank change requested (vendor) | `Sare: Payout bank change to Access ending 1190 requested. Active Thu 2pm. Not you? Freeze: sare.ng/v/freeze` | 107 |
+| Bank change active (vendor) | `Sare: Payouts now go to Access ending 1190. Not you? Call 0700 000 0000 now.` | 76 |
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
