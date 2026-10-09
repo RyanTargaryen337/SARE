@@ -456,6 +456,17 @@ While checkouts are blocked, a full-width banner at the top of the dashboard nam
 - Vendor or global pause: "Paused by Sàrè — call <number>."
 - Closed: "You're Closed — [Open now]."
 
+### Interaction states (DR-2C)
+| Screen / feature | Loading | Empty | Error | Success | Partial |
+|---|---|---|---|---|---|
+| Order page menu | text skeleton rows | "Menu coming soon" + Call/WhatsApp | "Couldn't load the menu — Retry" + "Message Mama Nkechi on WhatsApp" | menu with + buttons | photos lazy-load; sold-out items greyed "Sold out today" |
+| Checkout step 1 (OTP) | "Sending code…" | — | "Code didn't arrive? Resend in 0:45" (resend rules per CEO-P1) | phone verified | — |
+| Checkout review | — | — | price changed: "Jollof ₦2,500 → ₦2,800 · new total ₦8,000" with Confirm / Back; duplicate basket: "You just ordered this — see your order" | Pay button | — |
+| Return page | see DR-2A | — | see DR-2A | see DR-2A | "Confirming…" |
+| Status page | last known state + "Updated Xs ago" | — | "Can't refresh — check your connection · Retry" (keeps last state) | delivered / done | refund started → confirmed |
+| Vendor dashboard | skeleton cards | first day: "No orders yet — share your link" + share card | "Couldn't load — Retry" | live queue | Late or owed amounts flagged in the money card |
+| Payout ledger | skeleton rows | "Your first payout appears here after your first order" | "Couldn't load — Retry" | settlement groups | Late rows flagged |
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
