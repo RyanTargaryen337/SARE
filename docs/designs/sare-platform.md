@@ -518,6 +518,18 @@ Customer order, status and return pages use a light theme: off-white background,
 ### Accessibility and screen sizes (DR-6B)
 Design for 320px width first: no horizontal scroll, a single column under 600px, and a 2-column dashboard from 900px. Every state pairs a word with its colour ("Late", "Owed", "Paid"), never colour alone. Use real button and label elements, header/main/nav landmarks, a live region that announces status-page changes, alt text on menu photos, a visible focus outline, and layouts that survive 200% zoom. Check with TalkBack on an Android Go phone before launch.
 
+### New-order alerts (DR-7A)
+Vendor onboarding includes a "Turn on order alerts" step that requests push permission and sends a test alert. While an order is pending and the dashboard is open: a repeating sound until acknowledged, a count in the tab title ("(1) New order"), and the countdown. If push is denied, a persistent warning: "You'll only get SMS. Keep this page open or turn on alerts." The dashboard is installable to the home screen (PWA).
+
+### Accept and ETA (DR-7B)
+Tap Accept → ETA chips 30 / 45 / 60 / 90 / 120 / 180 min (60 preselected) → Confirm; the customer sees a clock time ("by 2:40pm"). Tap Reject → reason chips (Too busy / Item finished / Can't deliver there / Other) with the note "Customer gets a full refund."
+
+### Formats (DR-7C)
+Screens: "₦4,300" (comma thousands, kobo only when non-zero). SMS: "N4,300" (GSM-7, DR-5B). Dates "Tue 14 Oct", never ISO. Times 12-hour, "by 2:40pm", Lagos time. ETAs shown as clock times, not minutes. Masked phones "0803 *** 4521". One shared formatter is used by every screen and SMS template.
+
+### Share your shop (DR-7D)
+Dashboard card "Share your shop": short link (sare.ng/mama-nkechi), a large "Send on WhatsApp" button with a pre-written message ("Order from Mama Nkechi here: sare.ng/mama-nkechi - pay online, same price as in shop"), Copy link, and a printable QR poster for the counter. Prominent on day 1 (empty state), smaller afterwards.
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
