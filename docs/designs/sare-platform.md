@@ -417,6 +417,32 @@ Feasibility blockers: Gate 0 checks (a)-(f). Pending implementation choices for 
 
 Approval readiness: PASS — checked CEO-D1 (D2), CEO-D2 (D3), CEO-D3 (D4), CEO-E1 (D5), CEO-E1r (agent refinement under D5), CEO-E2 (D6), CEO-E3 (D7), CEO-E4 (D8), CEO-E5 (D9, deferred), CEO-M1 (D10), CEO-E3a (D11), CEO-E4a (D12), CEO-R1 (D13), CEO-R2 (D14), CEO-R3 (D15), CEO-S1 (D16), CEO-S2 (D17), CEO-E6 (D18), CEO-O1 (D19). Pending (not accepted work): CEO-P1 to CEO-P5, owned by /plan-eng-review.
 
+## Phase 1 Screens (/plan-design-review, 2026-10-09)
+
+Each item below records an individually approved design decision (DR-ids in the design ledger at the end of this section).
+
+### Customer order page (DR-1A)
+```
+ ┌ Mama Nkechi Kitchen · Yaba ─ Open ─ ✓ Same price as in shop ┐
+ │ [Call] [WhatsApp]                                            │
+ ├──────────────────────────────────────────────────────────────┤
+ │ Amala + Ewedu ............ ₦3,500   [ + ]                     │
+ │ Ofada Rice ............... ₦4,200   [ + ]   text first,       │
+ │ ...                                          photos lazy      │
+ ├──────────────────────────────────────────────────────────────┤
+ │ 2 items · ₦7,700                         [ Order → ]  sticky │
+ └──────────────────────────────────────────────────────────────┘
+ Order → 1 Phone + OTP → 2 LGA (shows delivery fee) or Pickup → 3 Area + landmark (Plus Code collapsed)
+       → 4 Review: food / delivery / total / "Sàrè fee: paid by vendor, ₦0 to you" → [Pay ₦8,700] → processor
+```
+Customers browse without signing in; OTP is asked only at checkout step 1. Vendor identity (name, area, open status, badge, call/WhatsApp) comes first; Sàrè branding stays small.
+
+### Vendor dashboard (DR-1B)
+Top to bottom: (1) blocking banner when paused/capped/owing, (2) Open/Closed toggle, (3) pending orders, each with a large "Accept in 6:12" countdown, (4) active orders with their next-status button, (5) money card "Next payout ₦23,400 on Tue" plus any Late or owed amounts, (6) share-your-link card, then order history and charts lower down or lazy-loaded.
+
+### Customer status page (DR-1C)
+One plain sentence per state (e.g. "Mama Nkechi is checking your order — 7 min left", "On the way — by 2:40pm"), a 5-step strip with text labels (Paid · Accepted · On the way · Delivered · Done), at most one primary button for the current state, a Call/WhatsApp vendor link, and "Updated 20s ago · Refresh".
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
