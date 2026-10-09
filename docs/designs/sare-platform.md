@@ -687,22 +687,85 @@ Synthesized from this review's findings (strategy-only depth: next verification 
 - CEO-P4: unguessable links, row policies, upload checks (owner: /plan-eng-review)
 - CEO-P5: logs, metrics, alerts, runbooks (owner: /plan-eng-review)
 
+## Design Review Outputs (/plan-design-review, 2026-10-09)
+
+Mockups: not generated (gstack designer has no OpenAI API key in this environment); text-only review. Outside voice: Claude subagent only (Codex unavailable), 25 findings, all folded into the passes above.
+
+### Design decisions ledger
+All approved by individual answers in this review: DR-1A, DR-1B, DR-1C, DR-1D, DR-2A, DR-2B, DR-2C, DR-3A, DR-4A, DR-4B, DR-5A, DR-5B, DR-6A, DR-6B, DR-7A, DR-7B, DR-7C, DR-7D, DR-7E, DR-7F, DR-7G, DR-7H, DR-7I (23 decisions). Each chose the recommended option.
+
+### NOT in scope
+- Full design system (DESIGN.md): deferred to TODOS.md; build from the DR-5A/DR-6A minimums until then.
+- Visual mockups: not generated (no designer API key); run /design-shotgun or /design-review once a key is available.
+
+### What already exists
+- Demo theme in `src/index.css` and `tailwind.config.js` (forest green, ember orange, Space Grotesk): kept for the vendor dashboard; customer pages move to a light theme (DR-6A) with system fonts (DR-5A).
+- `src/pages/Vendor.tsx`: reused for the dashboard after removing hard-coded money copy (DR-4A) and reordering content (DR-1B).
+- `src/components/ui/*` shadcn kit: reused on the dashboard only; customer pages are static and React-free (CEO-E4a).
+
+### Implementation Tasks (design)
+- [ ] **D1 (P1, human: ~1 day / CC: ~30min)** — customer pages — Build order, return and status pages to DR-1A, DR-1C, DR-2A, DR-2C with the light theme and system fonts
+  - Surfaced by: Passes 1, 2, 5, 6
+  - Files: to be determined
+  - Verify: 320px screenshot check, TalkBack walk-through, CI size budget passes
+- [ ] **D2 (P1, human: ~1 day / CC: ~30min)** — vendor dashboard — Reorder to DR-1B, add blocked banner (DR-2B), alerts (DR-7A), accept/ETA (DR-7B), share card (DR-7D); remove demo money strings (DR-4A)
+  - Surfaced by: Passes 1, 2, 4, 7
+  - Files: src/pages/Vendor.tsx (starting point)
+  - Verify: test fails on hard-coded commission % or settlement time; manual pending-order sound check on a low-end phone
+- [ ] **D3 (P1, human: ~4h / CC: ~15min)** — SMS — Implement the DR-5B templates with the GSM-7/160-char test and the DR-7C shared formatter
+  - Surfaced by: Pass 5, Pass 7
+  - Files: to be determined
+  - Verify: template test passes for every row
+- [ ] **D4 (P2, human: ~1 day / CC: ~30min)** — vendor flows — Photo restore (DR-7E), bank change (DR-7F), tracker (DR-7G), attestation (DR-7H), confirmations (DR-7I), founder "Needs you" queue (DR-1D)
+  - Surfaced by: Pass 7, Pass 1
+  - Files: to be determined
+  - Verify: each state reachable in a test-mode walk-through
+- [ ] **D5 (P2, human: ~2h / CC: ~15min)** — design system — Run /design-consultation to create DESIGN.md (TODOS.md)
+  - Surfaced by: Pass 5
+  - Files: DESIGN.md
+  - Verify: DESIGN.md exists and DR-5A/6A minimums are encoded as tokens
+
+### Completion Summary (design)
+```
+  +====================================================================+
+  |         DESIGN PLAN REVIEW — COMPLETION SUMMARY                    |
+  +====================================================================+
+  | System Audit         | no DESIGN.md; UI scope: 6 screens + SMS     |
+  | Step 0               | 4/10 initial; all 7 dimensions              |
+  | Pass 1  (Info Arch)  | 2/10 → 8/10 after fixes                     |
+  | Pass 2  (States)     | 3/10 → 8/10 after fixes                     |
+  | Pass 3  (Journey)    | 3/10 → 8/10 after fixes                     |
+  | Pass 4  (AI Slop)    | 5/10 → 8/10 after fixes                     |
+  | Pass 5  (Design Sys) | 2/10 → 7/10 after fixes (no DESIGN.md yet)  |
+  | Pass 6  (Responsive) | 3/10 → 8/10 after fixes                     |
+  | Pass 7  (Decisions)  | 9 resolved, 0 deferred                      |
+  +--------------------------------------------------------------------+
+  | NOT in scope         | written (2 items)                           |
+  | What already exists  | written                                     |
+  | TODOS.md updates     | 1 item proposed (added)                     |
+  | Approved Mockups     | 0 generated, 0 approved                     |
+  | Decisions made       | 23 added to plan                            |
+  | Decisions deferred   | 0                                           |
+  | Overall design score | 2/10 → 7/10                                 |
+  +====================================================================+
+```
+Pass 5 stays below 8 until DESIGN.md exists (deferred to TODOS.md by your choice).
+
+### Unresolved Decisions (design)
+None from this review.
+
 ## GSTACK REVIEW REPORT
 
 | Review | Trigger | Why | Runs | Status | Findings |
 |--------|---------|-----|------|--------|----------|
 | CEO Review | `/plan-ceo-review` | Scope & strategy | 1 | ISSUES OPEN | 18 proposals, 14 accepted, 4 deferred |
-| Outside Review | codex (plan-review) | Independent 2nd opinion | 1 | unavailable | codex not installed; native fallback unavailable — no completed external review |
+| Outside Review | codex (plan-review, design) | Independent 2nd opinion | 2 | unavailable | codex not installed; design phase used a native Claude subagent (25 findings, native, not outside coverage) — no completed external review |
 | Eng Review | `/plan-eng-review` | Architecture & tests (required) | 0 | — | — |
-| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+| Design Review | `/plan-design-review` | UI/UX gaps | 1 | CLEAR | score: 2/10 → 7/10, 23 decisions |
 | DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
 
-- **OUTSIDE COVERAGE:** codex, plan-review phase, unavailable (CLI not installed; native fallback needs TaskOutput, not available in this session); no findings.
-- **VERDICT:** No reviews CLEAR yet; CEO review has 5 decisions handed to eng review — eng review required.
+- **OUTSIDE COVERAGE:** codex, plan-review phase (CEO): unavailable, no findings. codex, design phase: unavailable; native Claude subagent completed with 25 findings (native, not external coverage).
+- **VERDICT:** DESIGN CLEARED; CEO review has open items handed to eng review — eng review required.
 
 **UNRESOLVED DECISIONS:**
-- CEO-P1: customer OTP not delivered (owner: /plan-eng-review)
-- CEO-P2: SMS pumping / OTP rate limits (owner: /plan-eng-review)
-- CEO-P3: audit trail for founder money actions (owner: /plan-eng-review)
-- CEO-P4: unguessable links, row policies, upload checks (owner: /plan-eng-review)
-- CEO-P5: logs, metrics, alerts, runbooks (owner: /plan-eng-review)
+- + 5 unresolved from prior reviews
