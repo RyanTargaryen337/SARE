@@ -467,6 +467,20 @@ While checkouts are blocked, a full-width banner at the top of the dashboard nam
 | Vendor dashboard | skeleton cards | first day: "No orders yet — share your link" + share card | "Couldn't load — Retry" | live queue | Late or owed amounts flagged in the money card |
 | Payout ledger | skeleton rows | "Your first payout appears here after your first order" | "Couldn't load — Retry" | settlement groups | Late rows flagged |
 
+### Journey storyboard and reassurance copy (DR-3A)
+```
+ STEP | USER DOES                       | USER FEELS             | PLAN SPECIFIES
+ -----|---------------------------------|------------------------|------------------------------------------
+ C1   | taps vendor link on WhatsApp    | "is this really her?"  | vendor-first header (DR-1A)
+ C2   | pays on processor page          | nervous                | return states (DR-2A)
+ C3   | waits up to 10 min for accept   | anxious                | countdown + "If Mama Nkechi doesn't accept in 10 min, you get all ₦8,700 back automatically."
+ C4   | refund in progress              | suspicious             | "Refund started. Banks can take 1–5 working days." on screen and SMS
+ V1   | first order accepted            | excited                | "Your first payout: Mon 13 Oct (weekend)"
+ V2   | waits for payout                | "will they pay me?"    | money card always shows the next payout date
+ V3   | first morning SMS               | relief, proof          | SMS names the order count and total
+```
+The "1–5 working days" figure must match the chosen processor's refund timing (confirmed in Gate 0).
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
