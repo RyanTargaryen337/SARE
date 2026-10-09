@@ -512,6 +512,12 @@ Rules: GSM-7 characters only ("N" instead of ₦, "Sare" instead of Sàrè, no c
 | Bank change requested (vendor) | `Sare: Payout bank change to Access ending 1190 requested. Active Thu 2pm. Not you? Freeze: sare.ng/v/freeze` | 107 |
 | Bank change active (vendor) | `Sare: Payouts now go to Access ending 1190. Not you? Call 0700 000 0000 now.` | 76 |
 
+### Customer page theme (DR-6A)
+Customer order, status and return pages use a light theme: off-white background, near-black text, forest green for the header bar, ember orange only for the main button (with dark text on it). The vendor dashboard keeps the dark brand theme. Every text/background pair meets WCAG AA (4.5:1).
+
+### Accessibility and screen sizes (DR-6B)
+Design for 320px width first: no horizontal scroll, a single column under 600px, and a 2-column dashboard from 900px. Every state pairs a word with its colour ("Late", "Owed", "Paid"), never colour alone. Use real button and label elements, header/main/nav landmarks, a live region that announces status-page changes, alt text on menu photos, a visible focus outline, and layouts that survive 200% zoom. Check with TalkBack on an Android Go phone before launch.
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
