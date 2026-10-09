@@ -481,6 +481,12 @@ While checkouts are blocked, a full-width banner at the top of the dashboard nam
 ```
 The "1–5 working days" figure must match the chosen processor's refund timing (confirmed in Gate 0).
 
+### Money copy comes from the server (DR-4A)
+Delete these demo strings from `src/pages/Vendor.tsx` before reuse: "NET AFTER 20% COMMISSION", "Next settlement: Tonight, 11:59 PM", "SAME-DAY". Every fee, rate, payout date and settlement wording on vendor and customer screens is rendered from server config and ledger data, never hard-coded. The demo stat cards and sales chart leave the top of the Phase 1 dashboard (history stays lower down). A test fails the build if the UI hard-codes a commission percentage or a settlement time.
+
+### Price badge (DR-4B)
+"✓ Same price as in shop" next to the vendor name; tapping it shows "Mama Nkechi promised these are her shop prices." A hidden badge shows nothing (no negative mark). The "Price different from shop?" report link appears only on the status page after the customer confirms delivery.
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
