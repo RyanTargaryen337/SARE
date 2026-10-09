@@ -443,6 +443,19 @@ Top to bottom: (1) blocking banner when paused/capped/owing, (2) Open/Closed tog
 ### Customer status page (DR-1C)
 One plain sentence per state (e.g. "Mama Nkechi is checking your order — 7 min left", "On the way — by 2:40pm"), a 5-step strip with text labels (Paid · Accepted · On the way · Delivered · Done), at most one primary button for the current state, a Call/WhatsApp vendor link, and "Updated 20s ago · Refresh".
 
+### Founder admin page (DR-1D)
+Top: a full-width banner while any pause is active ("ALL CHECKOUTS PAUSED since 14:02 — <reason>"), the global and per-vendor pause controls (two-step confirm, reason required), then one "Needs you" list of every manual item sorted by time to its deadline: Late settlement tickets (≤2 business days), refunds failed after 6h (≤1 business day), menu-photo checks (≤2 business days), cap-raise requests, debt write-offs and bank-change freezes. Each row shows type, vendor or order, age and "due in", and opens its own detail view.
+
+### Return from processor checkout (DR-2A)
+A return page polls the order and shows one of four states: "Confirming your payment… transfers can take up to 5 minutes. Don't pay again." (spinner + time waited) → "Paid! Mama Nkechi has 10 min to accept" (then the status page); "Not paid — Try again" (same order, no double charge); "Order expired — no money taken. If you paid, it's being refunded automatically." The order SMS link always reopens this page, so a killed browser tab recovers.
+
+### Vendor blocked-checkout banner (DR-2B)
+While checkouts are blocked, a full-width banner at the top of the dashboard names the cause and its fix, plus one SMS when the block starts:
+- Debt cap: "You owe ₦8,400 — pay to <account> or it's taken from your next orders."
+- Weekly cap: "Weekly limit ₦150,000 reached — resets Mon, or ask us to raise it [Request]."
+- Vendor or global pause: "Paused by Sàrè — call <number>."
+- Closed: "You're Closed — [Open now]."
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
