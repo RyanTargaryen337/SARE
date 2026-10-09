@@ -530,6 +530,21 @@ Screens: "₦4,300" (comma thousands, kobo only when non-zero). SMS: "N4,300" (G
 ### Share your shop (DR-7D)
 Dashboard card "Share your shop": short link (sare.ng/mama-nkechi), a large "Send on WhatsApp" button with a pre-written message ("Order from Mama Nkechi here: sare.ng/mama-nkechi - pay online, same price as in shop"), Copy link, and a printable QR poster for the counter. Prominent on day 1 (empty state), smaller afterwards.
 
+### Menu-photo restore (DR-7E)
+"Take photo of your menu board" opens the camera (gallery allowed). The photo is shrunk on the phone to about 200 KB before upload, with a progress bar and automatic retry. States: window open ("41h left to upload"), uploaded ("We'll check within 2 working days"), approved ("Badge is back"), rejected with a reason, window closed ("Badge returns on Tue 11 Nov"). One SMS per outcome.
+
+### Bank-change screens (DR-7F)
+Form: bank dropdown + 10-digit account number → live lookup shows "Name on account: ADEBAYO T. - Is this you?" → Confirm (blocked with the reason if it doesn't match the vendor's BVN name). During the 48h hold, a ledger banner: "Payouts go to GTB ending 4821 until Thu 2pm, then Access ending 1190." The freeze link opens a one-tap "This wasn't me - freeze" page.
+
+### Payout-delay tracker entry (DR-7G)
+Ledger tab "Compare with other apps": the last 14 sales days, each with "When did Chowdeck/Glovo pay you for this day?" (date picker defaulting to today, plus a "Same as day above" shortcut). The result appears only after 3 paired days: "Sàrè paid you 3.2 days sooner (based on dates you entered)". The empty state explains why, with one example row.
+
+### Price attestation (DR-7H)
+On saving any menu change: one checkbox, "My prices here are the same as in my shop" (required to show the badge; unticked saves without the badge), with helper text "This applies to your whole menu."
+
+### Cancel and dispute confirmations (DR-7I)
+Cancel: "Cancel this order? You get all ₦8,700 back." [Yes, cancel] [Keep order]. "Not delivered" and "Wrong order" are separate buttons, each opening a one-line explanation ("Mama Nkechi has 24h to reply. If she can't show it was delivered, you get your money back.") and Confirm; "Wrong order" allows an optional photo. The vendor's "Delivered" tap confirms once: "Mark delivered? The customer will be asked to confirm."
+
 ## CEO Review Outputs (/plan-ceo-review, 2026-10-08)
 
 ### NOT in scope
