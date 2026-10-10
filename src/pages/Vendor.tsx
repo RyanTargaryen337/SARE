@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BellRing, Check, X, Flame, Wallet, TrendingUp, ClipboardList } from 'lucide-react';
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { VENDORS, AREAS, naira } from '../lib/data';
 import { commissionKobo, koboToNaira, nairaToKobo } from '../lib/money';
 import { useSim } from '../lib/useSim';
+import Sparkline from '../components/Sparkline';
 
 const ease = [0.23, 0.34, 0.18, 1] as const;
 // The hub runs as "Jollof Junction" (v3)
@@ -135,21 +135,10 @@ export default function Vendor() {
           <div className="panel p-5">
             <p className="mono-label mb-2">SALES THIS WEEK (₦ THOUSAND)</p>
             <div className="h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sales} margin={{ top: 6, right: 0, left: -22, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F95E2C" stopOpacity={0.5} />
-                      <stop offset="100%" stopColor="#F95E2C" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="d" tick={{ fill: '#B8AC9C', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#B8AC9C', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: '#022F2A', border: '1px solid #1a3f35', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 12 }}
-                    labelStyle={{ color: '#E9DFD3' }} itemStyle={{ color: '#F95E2C' }} formatter={(v) => [`₦${v}k`, 'sales']} />
-                  <Area type="monotone" dataKey="v" stroke="#F95E2C" strokeWidth={2} fill="url(#sg)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Sparkline
+                data={sales.map((s) => ({ label: s.d, value: s.v }))}
+                summary={`Sales this week in thousand naira: ${sales.map((s) => `${s.d} ${s.v}`).join(', ')}.`}
+              />
             </div>
           </div>
 
