@@ -46,7 +46,7 @@ export default function Customer() {
   );
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
   const km = Math.max(1.2, gridToKm(dist(_a(v.area), _a(areaId))) * 0.9);
-  const fees = deliveryFee(subtotal, km, sim.surge);
+  const fees = deliveryFee(subtotal, km, false);
   const add = (id: string, d: number) => setCart((c) => ({ ...c, [id]: Math.max(0, (c[id] ?? 0) + d) }));
 
   const submit = () => {

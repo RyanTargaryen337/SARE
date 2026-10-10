@@ -16,3 +16,14 @@ export function commissionKobo(orderTotalKobo: number): number {
   // The ₦200 minimum never exceeds the order itself, so a vendor's net is never negative.
   return Math.min(Math.max(pct, COMMISSION_MIN_KOBO), orderTotalKobo);
 }
+
+type Charged = { subtotal: number; fees: { delivery: number } };
+
+/** What the customer pays, in naira: menu price plus the vendor's delivery fee. Sare adds no customer fees. */
+export const orderChargeNaira = (o: Charged) => o.subtotal + o.fees.delivery;
+
+/** What the vendor keeps, in naira: the full charge minus Sare's fee on that full charge. */
+export function vendorNetNaira(o: Charged): number {
+  const charge = nairaToKobo(orderChargeNaira(o));
+  return koboToNaira(charge - commissionKobo(charge));
+}

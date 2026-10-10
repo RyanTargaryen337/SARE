@@ -1,5 +1,6 @@
 import { useSim } from '../lib/useSim';
 import { AREAS, VENDORS, naira } from '../lib/data';
+import { orderChargeNaira } from '../lib/money';
 import LagosMap from '../components/LagosMap';
 
 export default function Ops() {
@@ -8,7 +9,7 @@ export default function Ops() {
   const inTransit = active.filter((o) => o.state === 'picked' || o.state === 'claimed');
   const online = sim.riders.filter((r) => r.online);
   const busy = online.filter((r) => r.status !== 'idle');
-  const gmv = active.reduce((s, o) => s + o.subtotal + o.fees.total, 0);
+  const gmv = active.reduce((s, o) => s + orderChargeNaira(o), 0);
 
   const perArea = AREAS.map((a) => ({
     a,

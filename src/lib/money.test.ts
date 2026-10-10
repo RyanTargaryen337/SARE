@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { commissionKobo, nairaToKobo } from './money';
+import { commissionKobo, nairaToKobo, orderChargeNaira, vendorNetNaira } from './money';
 
 describe('commissionKobo (5%, minimum ₦200)', () => {
   it.each([
@@ -25,5 +25,23 @@ describe('commissionKobo (5%, minimum ₦200)', () => {
   it('rejects fractional or negative kobo', () => {
     expect(() => commissionKobo(100.5)).toThrow(RangeError);
     expect(() => commissionKobo(-1)).toThrow(RangeError);
+  });
+});
+
+describe('order charge and vendor net', () => {
+  // service and small-order fees exist in the sim's fee object but are never charged
+  const order = { subtotal: 6_000, fees: { delivery: 1_000, service: 300, small: 300, total: 1_600 } };
+
+  it('charges menu price plus the vendor delivery fee only', () => {
+    expect(orderChargeNaira(order)).toBe(7_000);
+  });
+
+  it('takes 5% of food plus delivery (regression: commission was on food only)', () => {
+    expect(vendorNetNaira(order)).toBe(6_650); // 7,000 − 350
+  });
+
+  it('applies the ₦200 minimum to the full charge and never goes negative', () => {
+    expect(vendorNetNaira({ subtotal: 2_000, fees: { delivery: 500 } })).toBe(2_300);
+    expect(vendorNetNaira({ subtotal: 150, fees: { delivery: 0 } })).toBe(0);
   });
 });
