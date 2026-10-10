@@ -83,24 +83,24 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
         const tick = prev.tick + 1;
         const riders = prev.riders.map((r) => ({ ...r }));
         const orders = prev.orders.map((o) => ({ ...o }));
-        const events = [...prev.events];
+        let events = prev.events;
 
         // spawn ambient orders
         if (tick % 5 === 0 && orders.filter((o) => o.state !== 'delivered' && o.state !== 'rejected').length < 14) {
           const o = makeOrder(tick, false);
           orders.push(o);
-          pushEvent(events, `${o.code} · ${vendor(o.vendorId).name} → ${area(o.areaId).name}`);
+          events = pushEvent(events, `${o.code} · ${vendor(o.vendorId).name} → ${area(o.areaId).name}`);
         }
 
         for (const o of orders) {
           // auto-accept stale incoming orders (auto-dispatch SLA)
           if (o.state === 'incoming' && tick - o.incomingSince >= 8) {
             o.state = 'preparing';
-            pushEvent(events, `${o.code} auto-accepted · prep started`);
+            events = pushEvent(events, `${o.code} auto-accepted · prep started`);
           }
           if (o.state === 'preparing') {
             o.prepTicksLeft -= 1;
-            if (o.prepTicksLeft <= 0) { o.state = 'ready'; o.readySince = tick; pushEvent(events, `${o.code} ready for pickup`); }
+            if (o.prepTicksLeft <= 0) { o.state = 'ready'; o.readySince = tick; events = pushEvent(events, `${o.code} ready for pickup`); }
           }
           if (o.state === 'accepted') { o.state = 'preparing'; }
           // auto-assign a rider shortly after ready (gives the rider app a claim window)
@@ -112,7 +112,7 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
               const va = area(vendor(o.vendorId).area);
               r.status = 'pickup'; r.orderId = o.id;
               startLeg(r, va.x, va.y);
-              pushEvent(events, `${o.code} · ${r.name} dispatched`);
+              events = pushEvent(events, `${o.code} · ${r.name} dispatched`);
             }
           }
         }
@@ -132,13 +132,13 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
                   const ca = area(o.areaId);
                   r.status = 'dropoff';
                   startLeg(r, ca.x, ca.y);
-                  pushEvent(events, `${o.code} picked up · en route to ${ca.name}`);
+                  events = pushEvent(events, `${o.code} picked up · en route to ${ca.name}`);
                 } else if (r.status === 'dropoff') {
                   o.state = 'delivered'; o.deliveredAt = tick;
                   r.status = 'idle'; r.orderId = null;
                   r.deliveries += 1; r.monthDeliveries += 1;
                   r.earnings += Math.round(PRICING.riderDropFee + PRICING.riderPerKm * o.km);
-                  pushEvent(events, `${o.code} delivered · ${tick - o.placedAt} min door-to-door`);
+                  events = pushEvent(events, `${o.code} delivered · ${tick - o.placedAt} min door-to-door`);
                 }
               }
             }
