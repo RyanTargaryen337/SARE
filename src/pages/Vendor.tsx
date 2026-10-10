@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BellRing, Check, X, Flame, Wallet, TrendingUp, ClipboardList } from 'lucide-react';
 import { VENDORS, AREAS, naira } from '../lib/data';
-import { commissionKobo, koboToNaira, nairaToKobo, vendorNetNaira } from '../lib/money';
+import { commissionKobo, koboToNaira, nairaToKobo, orderChargeNaira, vendorNetNaira } from '../lib/money';
 import { useSim } from '../lib/useSim';
 import Sparkline from '../components/Sparkline';
 
@@ -91,7 +91,7 @@ export default function Vendor() {
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t hairline pt-3">
                   <span className="font-mono text-sm text-cream-dim">
-                    {naira(o.subtotal)} <span className="text-cream-dim/60">(you net {naira(vendorNetNaira(o))})</span>
+                    {naira(orderChargeNaira(o))} <span className="text-cream-dim/60">(you net {naira(vendorNetNaira(o))})</span>
                   </span>
                   <div className="flex gap-2">
                     {o.state === 'incoming' && (
