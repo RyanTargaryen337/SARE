@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, MapPin, Search, Store, Utensils, Clock3 } from 'lucide-react';
 import { PAGES, STATUS_LABEL, type PageDef } from '../lib/pages';
-import { city as cityRoute, near, ORDER, type Navigate } from '../lib/routes';
+import { city as cityRoute, HOME, near, ORDER, type Navigate } from '../lib/routes';
 import { CATEGORIES, CITIES, findCategory, findCity, readSavedLocation } from '../lib/discovery';
 
 type Props = { kind: 'page' | 'near' | 'city'; slug: string; go: Navigate; onChooseLocation: () => void };
@@ -78,7 +78,7 @@ function DiscoveryGrid({ go }: { go: Navigate }) {
           <label className="relative w-full sm:max-w-xs">
             <span className="sr-only">Search food and categories</span>
             <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search food and categories" className="w-full rounded-xl border border-slate-200 bg-[#faf9f6] py-3 pl-10 pr-3 outline-none focus:border-[#278052]" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search food and categories" className="w-full rounded-xl border border-slate-200 bg-[#faf9f6] py-3 pl-10 pr-3 outline-none focus-visible:ring-2 focus-visible:ring-[#28734d]/40 focus:border-[#278052]" />
           </label>
         </div>
         <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -107,13 +107,13 @@ export default function SitePage(props: Props) {
   const { kind, slug, go, onChooseLocation } = props;
   if (kind !== 'page') return <DiscoveryPage {...props} />;
 
-  const def = PAGES[slug];
+  const def = Object.hasOwn(PAGES, slug) ? PAGES[slug] : undefined;
   if (!def) {
     return (
       <div className="mx-auto min-h-[60vh] max-w-3xl px-5 py-24 text-[#18251f] sm:px-8">
         <h1 className="font-display text-4xl font-bold">Page not found</h1>
         <p className="mt-4 text-slate-600">That page doesn’t exist. Try the menu at the bottom of the page.</p>
-        <button onClick={() => go('home')} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#176b45] px-5 py-3 font-semibold text-white">Back to home <ArrowRight size={16} /></button>
+        <button onClick={() => go(HOME)} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#176b45] px-5 py-3 font-semibold text-white">Back to home <ArrowRight size={16} /></button>
       </div>
     );
   }

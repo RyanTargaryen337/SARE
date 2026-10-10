@@ -32,6 +32,14 @@ describe('SimProvider', () => {
     expect(feed).toMatch(/auto-accepted|ready for pickup|dispatched|→/);
   });
 
+  it('never applies surge pricing (regression: 20% of orders were surged despite no-surge copy)', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.1); // below the old 0.2 surge threshold
+    const { result } = setup();
+    tick(10);
+    expect(result.current.orders.length).toBeGreaterThan(0);
+    for (const o of result.current.orders) expect(o.surge).toBe(false);
+  });
+
   it('runs a customer order from placed to delivered', () => {
     const { result } = setup();
     const v = VENDORS[0];

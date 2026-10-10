@@ -28,6 +28,12 @@ export default function Landing({ go }: { go: Navigate }) {
   const [address, setAddress] = useState('');
   const [location, setLocation] = useState<SavedLocation | null>(readSavedLocation);
   const [locationError, setLocationError] = useState('');
+  useEffect(() => {
+    if (!locationOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLocationOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [locationOpen]);
   const live = orders.filter((o) => o.state !== 'delivered' && o.state !== 'rejected');
   const activeRiders = riders.filter((r) => r.online).length;
 
@@ -67,18 +73,18 @@ export default function Landing({ go }: { go: Navigate }) {
     <div className="bg-[#faf9f6] text-[#18251f]">
       {/* Location selection overlay */}
       {locationOpen && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071b15]/70 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setLocationOpen(false); }}>
-        <motion.div initial={{ opacity: 0, y: 16, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+        <motion.div role="dialog" aria-modal="true" aria-labelledby="location-dialog-title" initial={{ opacity: 0, y: 16, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
           <div className="flex items-start justify-between gap-4">
-            <div><span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e8f2e9] text-[#236746]"><MapPin size={21}/></span><h2 className="font-display text-2xl font-bold">Where should we deliver?</h2><p className="mt-1 text-sm text-slate-500">Choose your location to see what’s available near you.</p></div>
+            <div><span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e8f2e9] text-[#236746]"><MapPin size={21}/></span><h2 id="location-dialog-title" className="font-display text-2xl font-bold">Where should we deliver?</h2><p className="mt-1 text-sm text-slate-500">Choose your location to see what’s available near you.</p></div>
             <button onClick={() => setLocationOpen(false)} aria-label="Close location selector" className="rounded-full px-3 py-2 text-xl text-slate-400 hover:bg-slate-100">×</button>
           </div>
-          <button onClick={requestLocation} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#cbd9ce] px-4 py-3 font-semibold text-[#236746] transition hover:bg-[#f2f8f2]"><LocateFixed size={17}/> Use my current location</button>
+          <button autoFocus onClick={requestLocation} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#cbd9ce] px-4 py-3 font-semibold text-[#236746] transition hover:bg-[#f2f8f2]"><LocateFixed size={17}/> Use my current location</button>
           <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-400"><span className="h-px flex-1 bg-slate-200"/>or enter it manually<span className="h-px flex-1 bg-slate-200"/></div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-semibold">Country<select value={country} onChange={(e) => { setCountry(e.target.value); setCity(''); }} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 font-normal outline-none focus:border-[#28734d]"><option>Nigeria</option><option>Ghana</option></select></label>
-            <label className="text-sm font-semibold">City<select value={city} onChange={(e) => setCity(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 font-normal outline-none focus:border-[#28734d]">{cities[country].map((c) => <option key={c} value={c === 'Choose a city' ? '' : c}>{c}</option>)}</select></label>
+            <label className="text-sm font-semibold">Country<select value={country} onChange={(e) => { setCountry(e.target.value); setCity(''); }} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[#28734d]/40 focus:border-[#28734d]"><option>Nigeria</option><option>Ghana</option></select></label>
+            <label className="text-sm font-semibold">City<select value={city} onChange={(e) => setCity(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[#28734d]/40 focus:border-[#28734d]">{cities[country].map((c) => <option key={c} value={c === 'Choose a city' ? '' : c}>{c}</option>)}</select></label>
           </div>
-          <label className="mt-4 block text-sm font-semibold">Delivery address<input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, estate, landmark or building" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none placeholder:text-slate-400 focus:border-[#28734d]" /></label>
+          <label className="mt-4 block text-sm font-semibold">Delivery address<input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, estate, landmark or building" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[#28734d]/40 placeholder:text-slate-400 focus:border-[#28734d]" /></label>
           {locationError && <p role="status" className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{locationError}</p>}
           <button onClick={saveLocation} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#176b45] px-5 py-3.5 font-bold text-white transition hover:bg-[#105638]">Confirm location <ArrowRight size={17}/></button>
           <p className="mt-3 text-center text-xs text-slate-400">Your location is used to tailor delivery options. It isn’t assumed from your IP address.</p>

@@ -25,7 +25,7 @@ Vendors, areas, riders and every pricing constant live in `src/lib/data.ts`:
 - Service fee: 5% of subtotal, capped at ₦500
 - Surge: ×1.25
 - Small order fee: ₦300 under ₦2,000
-- Vendor commission: 20% (Growth tier)
+- Vendor commission: 5% of the order, ₦200 minimum (`src/lib/money.ts`)
 - Rider pay: ₦150/km + ₦400 per drop
 
 ## Development

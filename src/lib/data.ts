@@ -128,7 +128,6 @@ export const PRICING = {
   surgeMultiplier: 1.25,   // peak-hour / rain
   smallOrderFee: 300,      // ₦ when subtotal < ₦2000
   smallOrderBelow: 2000,
-  vendorCommission: 0.20,  // 20% standard rate
   riderPerKm: 150,         // ₦ rider pay per km
   riderDropFee: 400,       // ₦ per completed drop
   riderMonthlyBonus: 10000, // ₦ food allowance at 300 deliveries/mo

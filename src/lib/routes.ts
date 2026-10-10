@@ -32,7 +32,7 @@ const VIEWS = new Set<string>(NAV_ITEMS.map((n) => n.id))
 
 /** Unknown routes fall back to Home so a stale or mistyped link never shows a blank screen. */
 export function parseRoute(route: Route): ParsedRoute {
-  const [head, ...rest] = route.replace(/^#?\/?/, '').split('/')
+  const [head, ...rest] = route.replace(/^#?\/?/, '').replace(/[?#].*$/, '').replace(/\/+$/, '').split('/')
   const slug = rest.join('/')
   if ((head === 'page' || head === 'near' || head === 'city') && slug) return { kind: head, slug }
   if (VIEWS.has(head)) return { kind: 'view', view: head as AppView }

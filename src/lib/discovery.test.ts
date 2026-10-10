@@ -20,6 +20,16 @@ describe('saved delivery location', () => {
     expect(readSavedLocation()).toBeNull();
   });
 
+  it.each([
+    ['a JSON string', '"Lagos"'],
+    ['null', 'null'],
+    ['missing fields', '{"country":"Nigeria"}'],
+    ['wrong field types', '{"country":"Nigeria","city":7,"address":"x"}'],
+  ])('rejects a stored value that is %s', (_name, raw) => {
+    localStorage.setItem(LOCATION_KEY, raw);
+    expect(readSavedLocation()).toBeNull();
+  });
+
   it('survives blocked storage on read and write', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('blocked', 'SecurityError'); });
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('quota', 'QuotaExceededError'); });

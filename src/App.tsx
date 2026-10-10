@@ -28,7 +28,7 @@ export default function App() {
       <div className="min-h-screen flex flex-col">
         <Nav active={view} go={go} />
         <main className="flex-1">
-          {view === 'home' && <Landing go={go} />}
+          {view === HOME && <Landing go={go} />}
           {view === 'order' && <Customer />}
           {view === 'vendor' && <Vendor />}
           {view === 'rider' && <Rider />}

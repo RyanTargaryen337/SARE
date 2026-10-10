@@ -51,6 +51,15 @@ describe('Landing location picker', () => {
     expect(localStorage.getItem(LOCATION_KEY)).toBeNull();
   });
 
+  it('is a labelled modal dialog that focuses its first action and closes on Escape', () => {
+    openPicker();
+    const dialog = screen.getByRole('dialog', { name: 'Where should we deliver?' });
+    expect(dialog.getAttribute('aria-modal')).toBe('true');
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /Use my current location/ }));
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it('saves a valid location and closes the picker', () => {
     openPicker();
     fireEvent.change(screen.getByLabelText('City'), { target: { value: 'Lagos' } });

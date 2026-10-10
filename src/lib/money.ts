@@ -13,5 +13,6 @@ export function commissionKobo(orderTotalKobo: number): number {
     throw new RangeError(`order total must be a non-negative integer number of kobo, got ${orderTotalKobo}`);
   }
   const pct = Math.floor((orderTotalKobo * COMMISSION_RATE_BPS + 5_000) / 10_000);
-  return Math.max(pct, COMMISSION_MIN_KOBO);
+  // The ₦200 minimum never exceeds the order itself, so a vendor's net is never negative.
+  return Math.min(Math.max(pct, COMMISSION_MIN_KOBO), orderTotalKobo);
 }

@@ -45,6 +45,11 @@ describe('SitePage', () => {
     expect(screen.getByText('Set your delivery location to see what is available.')).toBeTruthy();
   });
 
+  it.each(['constructor', '__proto__', 'toString', 'no-such-page'])('page/%s shows "Page not found" (regression: prototype keys crashed the app)', (slug) => {
+    show('page', slug);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/not found/i);
+  });
+
   it.each([
     ['terms', false],
     ['privacy', false],

@@ -8,6 +8,7 @@ type Point = { label: string; value: number };
  */
 export default function Sparkline({ data, summary, height = 140 }: { data: Point[]; summary: string; height?: number }) {
   const gradientId = useId();
+  if (data.length === 0) return <p className="sr-only">{summary}</p>;
   const w = 300;
   const h = height;
   const pad = { top: 8, bottom: 18 };

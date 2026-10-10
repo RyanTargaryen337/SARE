@@ -36,7 +36,7 @@ function makeOrder(tick: number, isUser: boolean, vendorId?: string, items?: Ord
     return { name: m.name, qty: 1 + (Math.random() > 0.7 ? 1 : 0), price: m.price };
   }).filter((m, i, arr) => arr.findIndex((x) => x.name === m.name) === i);
   const subtotal = its.reduce((s, i) => s + i.price * i.qty, 0);
-  const surge = Math.random() < 0.2;
+  const surge = false; // Sare's pilot pricing has no surge (src/lib/pages.ts customer copy)
   return {
     id: `o${tick}-${Math.random().toString(36).slice(2, 7)}`,
     code: nextCode(), vendorId: v.id, areaId: customerArea, items: its, subtotal,

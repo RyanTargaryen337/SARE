@@ -41,7 +41,13 @@ export const LOCATION_KEY = 'sare-delivery-location';
 export function readSavedLocation(): SavedLocation | null {
   try {
     const raw = localStorage.getItem(LOCATION_KEY);
-    return raw ? (JSON.parse(raw) as SavedLocation) : null;
+    if (!raw) return null;
+    const v: unknown = JSON.parse(raw);
+    if (typeof v !== 'object' || v === null) return null;
+    const { country, city, address } = v as Record<string, unknown>;
+    return typeof country === 'string' && typeof city === 'string' && typeof address === 'string'
+      ? { country, city, address }
+      : null;
   } catch {
     return null;
   }

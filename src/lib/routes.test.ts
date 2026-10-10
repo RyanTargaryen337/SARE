@@ -17,6 +17,11 @@ describe('parseRoute', () => {
     ['#/near/rice', { kind: 'near', slug: 'rice' }],
     ['city/port-harcourt', { kind: 'city', slug: 'port-harcourt' }],
     ['page/a/b', { kind: 'page', slug: 'a/b' }],
+    // shared links carry tracking params and trailing slashes
+    ['#/page/about?utm_source=x', { kind: 'page', slug: 'about' }],
+    ['page/about/', { kind: 'page', slug: 'about' }],
+    ['#/vendor?ref=ad', { kind: 'view', view: 'vendor' }],
+    ['#/city/lagos/?a=1#top', { kind: 'city', slug: 'lagos' }],
     // fallbacks: never a blank screen
     ['', { kind: 'view', view: 'home' }],
     ['nope', { kind: 'view', view: 'home' }],

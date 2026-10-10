@@ -4,7 +4,9 @@ import { commissionKobo, nairaToKobo } from './money';
 describe('commissionKobo (5%, minimum ₦200)', () => {
   it.each([
     // [order total ₦, expected fee ₦]
-    [0, 200],
+    [0, 0], // the minimum is capped at the order total
+    [150, 150],
+    [200, 200],
     [2_000, 200],
     [2_500, 200],
     [3_000, 200],

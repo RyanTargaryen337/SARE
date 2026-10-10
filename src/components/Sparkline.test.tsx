@@ -23,4 +23,10 @@ describe('Sparkline', () => {
     expect(container.querySelectorAll('text')).toHaveLength(data.length);
     expect(getByText('Sales summary').tagName).toBe('FIGCAPTION');
   });
+
+  it('renders only the text summary for an empty series', () => {
+    const { container, getByText } = render(<Sparkline data={[]} summary="No sales yet" />);
+    expect(container.querySelector('svg')).toBeNull();
+    expect(getByText('No sales yet')).toBeTruthy();
+  });
 });
