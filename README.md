@@ -37,6 +37,12 @@ npm ci
 npm run dev      # start the dev server
 npm run build    # typecheck and build to dist/
 npm run lint
+npm test         # Vitest unit tests (sim, commission)
+npm run test:e2e # Playwright smoke tests (builds, then serves on :4173)
 ```
+
+Pages live at hash routes: `#/vendor`, `#/page/<slug>` (content in `src/lib/pages.ts`),
+`#/near/<category>` and `#/city/<place>` (lists in `src/lib/discovery.ts`). Page copy must
+match the approved plan in `docs/designs/sare-platform.md`.
 
 Built with React 19, TypeScript, Vite, Tailwind CSS 3, shadcn/ui and Framer Motion.
