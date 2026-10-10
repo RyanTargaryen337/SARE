@@ -60,6 +60,23 @@ describe('Landing location picker', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
+  it('traps Tab inside the dialog and returns focus to the opener on close', () => {
+    const opener = document.createElement('button');
+    document.body.appendChild(opener);
+    opener.focus();
+    openPicker();
+    const confirmBtn = screen.getByRole('button', { name: /Confirm location/ });
+    const closeBtn = screen.getByRole('button', { name: 'Close location selector' });
+    confirmBtn.focus();
+    fireEvent.keyDown(window, { key: 'Tab' });
+    expect(document.activeElement).toBe(closeBtn);
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(confirmBtn);
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(document.activeElement).toBe(opener);
+    opener.remove();
+  });
+
   it('saves a valid location and closes the picker', () => {
     openPicker();
     fireEvent.change(screen.getByLabelText('City'), { target: { value: 'Lagos' } });

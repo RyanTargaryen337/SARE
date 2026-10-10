@@ -23,7 +23,7 @@ Vendors, areas, riders and every pricing constant live in `src/lib/data.ts`:
 
 - Delivery: ₦500 base + ₦120/km, free over ₦15,000
 - Service fee: 5% of subtotal, capped at ₦500
-- Surge: ×1.25
+- Surge: ×1.25 (illustrative Phase 2 constant; the sim and pilot apply no surge)
 - Small order fee: ₦300 under ₦2,000
 - Vendor commission: 5% of the order, ₦200 minimum (`src/lib/money.ts`)
 - Rider pay: ₦150/km + ₦400 per drop
