@@ -37,4 +37,11 @@ describe('info page content', () => {
     }
     for (const c of CITIES) expect(parseRoute(`city/${c.slug}`)).toEqual({ kind: 'city', slug: c.slug });
   });
+
+  it('rider copy makes no earnings promise (plan: rider pay is Phase 3 and not yet set)', () => {
+    const r = PAGES.riders;
+    const text = [r.title, r.lede, ...r.sections.flatMap((x) => [x.heading, x.body ?? '', ...(x.bullets ?? [])]), r.apply!.body].join(' ');
+    expect(text).not.toMatch(/₦\s?\d|per week|\/ ?week|average/i);
+    expect(r.status).toBe('planned');
+  });
 });

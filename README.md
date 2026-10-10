@@ -47,4 +47,8 @@ Pages live at hash routes: `#/vendor`, `#/page/<slug>` (content in `src/lib/page
 unknown routes fall back to Home. Page copy must match the approved plan in
 `docs/designs/sare-platform.md`.
 
+The riders page (`#/page/riders`) has an Apply section. Set `VITE_RIDER_TYPEFORM_ID` to a Typeform
+form ID (for example in `.env.local`) to embed the application form. Without it, the page shows a
+readiness checklist that stays in the browser and sends nothing.
+
 Built with React 19, TypeScript, Vite, Tailwind CSS 3, shadcn/ui and Framer Motion.

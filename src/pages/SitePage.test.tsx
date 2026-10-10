@@ -50,6 +50,14 @@ describe('SitePage', () => {
     expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/not found/i);
   });
 
+  it('the riders page leads with Apply and shows the application block', () => {
+    show('page', 'riders');
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/^Ride with Sàrè/);
+    expect(screen.getByRole('button', { name: /Apply now/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: 'Apply to ride with Sàrè' })).toBeTruthy();
+    expect(screen.getByText(/Planned · not available yet/)).toBeTruthy();
+  });
+
   it.each([
     ['terms', false],
     ['privacy', false],

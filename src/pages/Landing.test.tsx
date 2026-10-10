@@ -77,6 +77,13 @@ describe('Landing location picker', () => {
     opener.remove();
   });
 
+  it('"Become a rider" opens the rider recruitment page, not the rider app demo (regression)', () => {
+    const go = vi.fn();
+    render(<SimProvider><Landing go={go} /></SimProvider>);
+    fireEvent.click(screen.getByRole('button', { name: /Become a rider/ }));
+    expect(go).toHaveBeenCalledWith('page/riders');
+  });
+
   it('saves a valid location and closes the picker', () => {
     openPicker();
     fireEvent.change(screen.getByLabelText('City'), { target: { value: 'Lagos' } });

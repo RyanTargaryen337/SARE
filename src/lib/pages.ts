@@ -25,6 +25,17 @@ export interface PageDef {
   sections: PageSection[]
   cta?: { label: string; to: string }
   meta?: Array<{ k: string; v: string }>
+  /** Recruitment pages: an application block (external form embed, or a readiness check). */
+  apply?: ApplyDef
+}
+
+export interface ApplyDef {
+  heading: string
+  body: string
+  /** Shown as a self-check when no external form is configured. Nothing is collected. */
+  checklist: string[]
+  /** Typeform form ID (from env); when absent or invalid the checklist is shown instead. */
+  formId?: string
 }
 
 export const STATUS_LABEL: Record<PageDef['status'], string> = {
@@ -108,25 +119,55 @@ export const PAGES: Record<string, PageDef> = {
     slug: 'riders',
     group: 'product',
     eyebrow: 'For riders',
-    title: 'A rider network, built carefully.',
+    title: 'Ride with Sàrè: every drop shows its pay, and customers pay by card, transfer or USSD.',
     lede:
-      'During the pilot, vendors deliver with their own riders. A Sare rider network comes later, zone by zone, once the vendor side is proven.',
+      'Sàrè riders start zone by zone, after vendors in that zone are being paid reliably. Until then, vendors deliver with their own riders. Apply now and you join the list for your area.',
     status: 'planned',
     sections: [
       {
-        heading: 'What riders will need',
+        heading: 'What the rider app is built around',
         bullets: [
-          'NIN and BVN verification',
-          'A valid licence, vehicle papers and insurance',
-          'LASDRI registration for Lagos',
-          'A smartphone with data',
+          'A pay breakdown for every delivery, line by line',
+          'A minimum pay per delivery at peak hours',
+          'Customers pay through the payment processor, so you carry no customer cash and hold no float',
+          'An accident fund that every delivery pays into',
+          'NHIA health insurance enrolment',
+          'A 6-hour limit on continuous work',
         ],
       },
       {
-        heading: 'What we are designing for',
-        body: 'A per-delivery earnings breakdown, a minimum per delivery at peak hours, limits on continuous working hours, and no cash handling: customers pay through the processor, never the rider.',
+        heading: 'Every Sàrè rider is verified',
+        body: 'No rider takes a Sàrè delivery before verification is complete. That is the rule each zone must keep, and it is why zones open one at a time.',
+        bullets: [
+          'NIN and BVN',
+          'A valid licence, checked with the FRSC',
+          'Vehicle papers and insurance',
+          'A live photo matched to your ID',
+          'LASDRI registration if you ride in Lagos',
+          'A background check, repeated every 6 months',
+        ],
+      },
+      {
+        heading: 'How it works',
+        bullets: [
+          'Apply below and tell us where you ride',
+          'When your zone opens, we ask for your documents and verify them',
+          'Once verified, you go online in the rider app and accept your first delivery',
+        ],
       },
     ],
+    apply: {
+      heading: 'Apply to ride with Sàrè',
+      body: 'Tell us where you ride. When your zone opens, we contact you to verify your documents.',
+      formId: import.meta.env.VITE_RIDER_TYPEFORM_ID,
+      checklist: [
+        'I have a NIN and a BVN',
+        'I have a valid riding licence',
+        'I have vehicle papers and insurance',
+        'I am registered with LASDRI, or I ride outside Lagos',
+        'I have a smartphone with data',
+      ],
+    },
     cta: { label: 'See the Rider App demo', to: 'rider' },
   },
 

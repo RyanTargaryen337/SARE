@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Bike, Store, Timer, Zap, MapPin, LocateFixed, ShoppingBag, Utensils, Pill, ShoppingBasket, ChevronDown, ShieldCheck } from 'lucide-react';
 import { useSim } from '../lib/useSim';
 import LagosMap from '../components/LagosMap';
-import { ORDER, OPS, RIDER, VENDOR, type Navigate } from '../lib/routes';
+import { ORDER, OPS, page, VENDOR, type Navigate } from '../lib/routes';
 import { readSavedLocation, writeSavedLocation, type SavedLocation } from '../lib/discovery';
 
 /** Dispatched by the footer and info pages to open the location picker on Home. */
@@ -120,7 +120,7 @@ export default function Landing({ go }: { go: Navigate }) {
               <button onClick={() => location ? go(ORDER) : openPicker()} className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-[#176b45] px-6 py-4 font-bold text-white transition hover:bg-[#105638] sm:mt-0 sm:w-auto">{location ? 'Explore nearby' : 'Set location'} <ArrowRight size={17}/></button>
             </motion.div>
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#718076]"><span className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-[#218153]"/> Trusted local vendors</span><span className="flex items-center gap-1.5"><Zap size={14} className="text-[#218153]"/> Simple, reliable delivery</span></div>
-            <div className="mt-9 flex flex-wrap gap-3"><button onClick={() => go(RIDER)} className="flex items-center gap-2 rounded-full border border-[#d9e2d8] px-4 py-2.5 text-sm font-semibold text-[#415448] transition hover:border-[#218153] hover:bg-white"><Bike size={16}/> Become a rider</button><button onClick={() => go(VENDOR)} className="flex items-center gap-2 rounded-full border border-[#d9e2d8] px-4 py-2.5 text-sm font-semibold text-[#415448] transition hover:border-[#218153] hover:bg-white"><Store size={16}/> Sell on Sare</button></div>
+            <div className="mt-9 flex flex-wrap gap-3"><button onClick={() => go(page('riders'))} className="flex items-center gap-2 rounded-full border border-[#d9e2d8] px-4 py-2.5 text-sm font-semibold text-[#415448] transition hover:border-[#218153] hover:bg-white"><Bike size={16}/> Become a rider</button><button onClick={() => go(VENDOR)} className="flex items-center gap-2 rounded-full border border-[#d9e2d8] px-4 py-2.5 text-sm font-semibold text-[#415448] transition hover:border-[#218153] hover:bg-white"><Store size={16}/> Sell on Sare</button></div>
           </div>
           <motion.div initial={{ opacity: 0, scale: .97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .7, delay: .12 }} className="relative mx-auto w-full max-w-[560px]">
             <div className="relative aspect-[1.02/1] overflow-hidden rounded-[2rem] bg-[#e7eee2] p-4 sm:p-6">

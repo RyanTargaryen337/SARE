@@ -59,8 +59,12 @@ test('info pages render from pages.ts, with status labels and working CTAs', asy
 
   await page.goto('/#/page/terms');
   await expect(page.getByText(/Draft · pending legal review/)).toBeVisible();
-  await page.goto('/#/page/riders');
+  await page.goto('/');
+  await page.getByRole('button', { name: /Become a rider/ }).click();
+  await expect(page).toHaveURL(/#\/page\/riders$/);
   await expect(page.getByText(/Planned · not available yet/)).toBeVisible();
+  await page.getByRole('button', { name: /Apply now/ }).click();
+  await expect(page.getByRole('heading', { name: 'Apply to ride with Sàrè' })).toBeInViewport();
   await page.goto('/#/page/does-not-exist');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
   expect(errors).toEqual([]);

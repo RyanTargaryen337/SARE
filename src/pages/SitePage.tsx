@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowRight, MapPin, Search, Store, Utensils, Clock3 } from 'lucide-react';
 import { PAGES, STATUS_LABEL, type PageDef } from '../lib/pages';
 import { city as cityRoute, HOME, near, ORDER, type Navigate } from '../lib/routes';
+import ApplyBlock from '../components/ApplyBlock';
 import { CATEGORIES, CITIES, findCategory, findCity, readSavedLocation } from '../lib/discovery';
 
 type Props = { kind: 'page' | 'near' | 'city'; slug: string; go: Navigate; onChooseLocation: () => void };
@@ -129,8 +130,15 @@ export default function SitePage(props: Props) {
         <h1 className="mt-4 max-w-4xl font-display text-4xl font-bold leading-tight tracking-tight sm:text-6xl">{def.title}</h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">{def.lede}</p>
         <div className="mt-8 flex flex-wrap gap-3">
+          {def.apply && (
+            <button onClick={() => document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="inline-flex items-center gap-2 rounded-full bg-[#176b45] px-5 py-3 font-semibold text-white">
+              Apply now <ArrowRight size={16} />
+            </button>
+          )}
           {def.cta && (
-            <button onClick={() => go(def.cta!.to)} className="inline-flex items-center gap-2 rounded-full bg-[#176b45] px-5 py-3 font-semibold text-white">
+            <button onClick={() => go(def.cta!.to)} className={def.apply
+              ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9ce] px-5 py-3 font-semibold text-[#176b45]'
+              : 'inline-flex items-center gap-2 rounded-full bg-[#176b45] px-5 py-3 font-semibold text-white'}>
               {def.cta.label} <ArrowRight size={16} />
             </button>
           )}
@@ -173,6 +181,8 @@ export default function SitePage(props: Props) {
             ))}
           </div>
         )}
+
+        {def.apply && <ApplyBlock apply={def.apply} formId={def.apply.formId} />}
       </section>
       {(slug === 'customers' || slug === 'food-delivery' || slug === 'about') && <DiscoveryGrid go={go} />}
     </div>
