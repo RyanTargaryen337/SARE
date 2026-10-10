@@ -121,11 +121,10 @@ export default function Customer() {
               ))}
               <div className="mt-3 space-y-1 border-t hairline pt-3 text-sm">
                 <Row l="Subtotal" r={naira(placed.subtotal)} />
-                <Row l={`Delivery (${placed.km.toFixed(1)} km)${placed.surge ? ' · surge ×1.25' : ''}`} r={placed.fees.delivery === 0 ? 'FREE' : naira(placed.fees.delivery)} />
-                <Row l="Service fee (5%, capped ₦500)" r={naira(placed.fees.service)} />
-                {placed.fees.small > 0 && <Row l="Small order fee" r={naira(placed.fees.small)} />}
+                <Row l={`Vendor delivery fee (${placed.km.toFixed(1)} km)`} r={placed.fees.delivery === 0 ? 'FREE' : naira(placed.fees.delivery)} />
+                <Row l="Sare fee" r="paid by vendor" />
                 <div className="flex justify-between pt-2 font-display text-base font-bold text-cream">
-                  <span>Total</span><span>{naira(placed.subtotal + placed.fees.total)}</span>
+                  <span>Total</span><span>{naira(placed.subtotal + placed.fees.delivery)}</span>
                 </div>
               </div>
             </div>
@@ -205,14 +204,14 @@ export default function Customer() {
                       <div className="mt-3 flex items-center justify-between">
                         <span className="font-mono text-sm text-cream">{naira(m.price)}</span>
                         {q === 0 ? (
-                          <button onClick={() => add(m.id, 1)} className="grid h-8 w-8 place-items-center rounded-full bg-ember text-forest-deep transition hover:bg-ember-soft">
+                          <button onClick={() => add(m.id, 1)} aria-label={`Add ${m.name}`} className="grid h-8 w-8 place-items-center rounded-full bg-ember text-forest-deep transition hover:bg-ember-soft">
                             <Plus size={15} />
                           </button>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <button onClick={() => add(m.id, -1)} className="grid h-8 w-8 place-items-center rounded-full bg-forest-mid text-cream"><Minus size={14} /></button>
+                            <button onClick={() => add(m.id, -1)} aria-label={`Remove one ${m.name}`} className="grid h-8 w-8 place-items-center rounded-full bg-forest-mid text-cream"><Minus size={14} /></button>
                             <span className="w-5 text-center font-mono text-sm text-cream">{q}</span>
-                            <button onClick={() => add(m.id, 1)} className="grid h-8 w-8 place-items-center rounded-full bg-ember text-forest-deep"><Plus size={15} /></button>
+                            <button onClick={() => add(m.id, 1)} aria-label={`Add one more ${m.name}`} className="grid h-8 w-8 place-items-center rounded-full bg-ember text-forest-deep"><Plus size={15} /></button>
                           </div>
                         )}
                       </div>
@@ -223,15 +222,14 @@ export default function Customer() {
 
               {/* checkout */}
               <div className="panel mt-6 p-5">
-                <p className="mono-label mb-3">CHECKOUT · TRANSPARENT FEES</p>
+                <p className="mono-label mb-3">CHECKOUT · MENU PRICE + DELIVERY, NOTHING ELSE</p>
                 <div className="space-y-1 text-sm">
                   <Row l="Subtotal" r={naira(subtotal)} />
-                  <Row l={`Delivery to ${_a(areaId).name} (${km.toFixed(1)} km)${sim.surge ? ' · surge ×1.25' : ''}`}
-                    r={subtotal === 0 ? '—' : fees.delivery === 0 ? 'FREE over ₦15,000' : naira(fees.delivery)} />
-                  <Row l="Service fee (5%, capped ₦500)" r={subtotal === 0 ? '—' : naira(fees.service)} />
-                  {fees.small > 0 && <Row l="Small order fee (under ₦2,000)" r={naira(fees.small)} />}
+                  <Row l={`Vendor delivery fee to ${_a(areaId).name} (${km.toFixed(1)} km)`}
+                    r={subtotal === 0 ? '—' : fees.delivery === 0 ? 'FREE' : naira(fees.delivery)} />
+                  <Row l="Sare fee" r="paid by vendor" />
                   <div className="flex justify-between border-t hairline pt-3 font-display text-lg font-bold text-cream">
-                    <span>Total</span><span>{naira(subtotal + fees.total)}</span>
+                    <span>Total</span><span>{naira(subtotal + fees.delivery)}</span>
                   </div>
                 </div>
                 <button onClick={submit} disabled={!cartItems.length}

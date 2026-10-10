@@ -27,6 +27,7 @@ export default function Nav({ active, go }: { active: AppView | null; go: Naviga
             <button
               key={t.id}
               onClick={() => go(t.id)}
+              aria-label={t.label}
               aria-current={active === t.id ? 'page' : undefined}
               className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors ${
                 active === t.id ? 'bg-ember text-forest-deep font-semibold' : 'text-cream-dim hover:bg-forest-mid hover:text-cream'
