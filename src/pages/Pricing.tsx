@@ -121,7 +121,6 @@ export default function Pricing() {
             {[
               ['Meal allowance', `${naira(PRICING.riderMonthlyBonus)}/mo at 300 deliveries`],
               ['Sunday streak', `${naira(PRICING.riderSundayBonus)} per Sunday worked`],
-              ['Top riders', '~₦100,000 / week total'],
             ].map(([l, r]) => (
               <div key={l} className="flex justify-between border-b hairline py-2 text-sm last:border-0">
                 <span className="text-cream-dim">{l}</span><span className="font-mono text-cream">{r}</span>
