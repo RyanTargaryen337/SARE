@@ -16,7 +16,7 @@ export default function Pricing() {
         <Info size={18} className="mt-0.5 shrink-0 text-ember" />
         <p>
           <span className="font-semibold">Illustrative Phase 2 marketplace model, not today's vendor offer.</span>{' '}
-          Today vendors pay 5% per order (minimum ₦200), taken inside the payment split, and customers pay only the menu price plus the vendor's delivery fee.
+          Today vendors pay 5% of the food bill (minimum ₦200), taken inside the payment split, and customers pay the menu price, the delivery fee and a ₦100 service fee.
         </p>
       </div>
       <p className="mono-label">MONETIZATION MODEL · BENCHMARKED ON THE NIGERIAN MARKET</p>

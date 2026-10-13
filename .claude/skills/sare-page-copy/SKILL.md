@@ -36,10 +36,11 @@ Write down:
   approved constants, leave it out. Don't use a placeholder on a live page.
 - Demo constants in `src/lib/data.ts` (rider pay, bonuses, surge) are
   illustrative. Never present them as an offer.
-- Money claims must match the plan: 5% commission on food plus the vendor's
-  delivery fee, ₦200 minimum, taken inside the processor split, next-business-day
-  settlement, Sàrè never holds funds, customers pay the menu price plus the
-  vendor's delivery fee only.
+- Money claims must match the plan (pricing per the Oct 2026 pre-seed deck): vendors pay
+  5% of the food bill, ₦200 minimum, taken inside the processor split; customers pay the menu
+  price, the delivery fee and a ₦100 service fee; Sàrè partner riders pay a 5% booking fee on
+  the delivery fee (vendors' own riders pay nothing); next-business-day settlement; Sàrè never
+  holds funds.
 - Regulatory and verification steps (NIN, BVN, FRSC, LASDRI, NHIA) are listed
   exactly as the plan states them.
 

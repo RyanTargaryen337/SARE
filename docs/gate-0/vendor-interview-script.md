@@ -69,11 +69,12 @@ Only now, describe Sàrè in plain words:
 > "Here's what I'm building. You get your own ordering link to share with your customers on WhatsApp or Instagram.
 > Customers pay by card, transfer or USSD through Paystack or Flutterwave. The payment is split automatically:
 > your share goes straight to your bank account the next business day, and Sàrè never holds your money. Sàrè takes
-> 5% of the order (food plus your delivery fee), with a minimum of ₦200 per order. You set your own menu prices
-> and delivery fee, and you deliver with your own rider. No monthly fee, no signup fee."
+> 5% of the food bill, with a minimum of ₦200 per order, and nothing on your delivery fee when your own rider
+> delivers. Customers see a ₦100 service fee on the menu. You set your own menu prices and delivery fee. No monthly
+> fee, no signup fee."
 
 18. What's your first reaction? What sounds good, and what worries you?
-19. Is 5% (₦200 minimum) fair to you? What would make it not worth it?
+19. Is 5% of the food bill (₦200 minimum) fair to you? What would make it not worth it?
 20. What would you need to see before you trust it with your orders?
 
 ## Part 7: The commitment ask (2 min)

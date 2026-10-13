@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BellRing, Check, X, Flame, Wallet, TrendingUp, ClipboardList } from 'lucide-react';
 import { VENDORS, AREAS, naira } from '../lib/data';
-import { commissionKobo, koboToNaira, nairaToKobo, orderChargeNaira, vendorNetNaira } from '../lib/money';
+import { commissionKobo, koboToNaira, nairaToKobo, vendorNetNaira } from '../lib/money';
 import { useSim } from '../lib/useSim';
 import Sparkline from '../components/Sparkline';
 
@@ -20,7 +20,7 @@ export default function Vendor() {
   const incoming = mine.filter((o) => o.state === 'incoming');
   const doneToday = 214 + sim.orders.filter((o) => o.vendorId === MY_VENDOR && o.state === 'delivered').length;
   const gross = 812400;
-  // Demo figure: today's orders at the average basket, each charged 5% with the ₦200 minimum.
+  // Demo figure: today's orders at the average food bill, each charged 5% with the ₦200 minimum.
   const commission = koboToNaira(doneToday * commissionKobo(nairaToKobo(Math.round(gross / doneToday))));
 
   return (
@@ -41,7 +41,7 @@ export default function Vendor() {
         {[
           { icon: <ClipboardList size={15} />, k: String(doneToday), v: 'orders today' },
           { icon: <Wallet size={15} />, k: naira(gross), v: 'gross sales today' },
-          { icon: <TrendingUp size={15} />, k: naira(gross - commission), v: 'net after Sare fee (5%, min ₦200/order)' },
+          { icon: <TrendingUp size={15} />, k: naira(gross - commission), v: 'net after Sàrè fee (5% of food, min ₦200/order)' },
           { icon: <Flame size={15} />, k: '8 min', v: 'avg prep time' },
         ].map((s) => (
           <div key={s.v} className="panel p-4">
@@ -91,7 +91,7 @@ export default function Vendor() {
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t hairline pt-3">
                   <span className="font-mono text-sm text-cream-dim">
-                    {naira(orderChargeNaira(o))} <span className="text-cream-dim/60">(you net {naira(vendorNetNaira(o))})</span>
+                    {naira(o.subtotal)} <span className="text-cream-dim/60">(you net {naira(vendorNetNaira(o))})</span>
                   </span>
                   <div className="flex gap-2">
                     {o.state === 'incoming' && (
@@ -145,8 +145,8 @@ export default function Vendor() {
           <div className="panel p-5">
             <p className="mono-label mb-3">PAYOUT · PROCESSOR SETTLEMENT</p>
             {[
-              ['Gross sales', naira(gross)],
-              ['Sare fee (5%, min ₦200/order)', `−${naira(commission)}`],
+              ['Food sales', naira(gross)],
+              ['Sàrè fee (5% of food, min ₦200/order)', `−${naira(commission)}`],
               ['Net payout', naira(gross - commission)],
               ['Next settlement', "Processor's next run"],
             ].map(([l, r]) => (

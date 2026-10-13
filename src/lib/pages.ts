@@ -1,9 +1,9 @@
 // src/lib/pages.ts
 //
 // Content for the marketing/info pages. Every claim here must match the approved plan
-// (docs/designs/sare-platform.md): 5% commission with a ₦200 minimum taken inside the
+// (docs/designs/sare-platform.md): 5% of the food bill with a ₦200 minimum taken inside the
 // processor split, payouts on the processor's settlement schedule, Sare never holds
-// customer or vendor money, customers pay menu price + the vendor's delivery fee only.
+// customer or vendor money, customers pay menu price + delivery fee + a ₦100 service fee.
 // Do not add traction numbers, team sizes, dates or contacts until they are true.
 import { page } from './routes'
 
@@ -74,7 +74,7 @@ export const PAGES: Record<string, PageDef> = {
       },
       {
         heading: 'What you pay',
-        body: 'The menu price plus the vendor’s own delivery fee. No Sare service fee, no surge pricing. Sare’s fee is paid by the vendor and shown on your receipt.',
+        body: 'The menu price, the delivery fee and a ₦100 service fee, all shown before you pay. No markup on menu prices and no surge pricing.',
       },
     ],
     cta: { label: 'Try the ordering demo', to: 'order' },
@@ -100,7 +100,7 @@ export const PAGES: Record<string, PageDef> = {
       },
       {
         heading: 'What it costs',
-        body: '5% of each order (food plus your delivery fee), minimum ₦200 per order, taken inside the payment split. No monthly fee, no signup fee. Your menu price stays your price.',
+        body: '5% of the food bill, minimum ₦200 per order, taken inside the payment split. Nothing on your delivery fee when your own rider delivers. No monthly fee, no signup fee. Your menu price stays your price.',
       },
       {
         heading: 'Getting started',
@@ -231,7 +231,7 @@ export const PAGES: Record<string, PageDef> = {
       },
       {
         heading: 'What it costs',
-        body: '5% of each order, minimum ₦200, taken inside the payment split. Nothing else.',
+        body: '5% of the food bill, minimum ₦200, taken inside the payment split. Nothing else.',
       },
     ],
     cta: { label: 'Open the Vendor Hub demo', to: 'vendor' },
@@ -371,7 +371,7 @@ export const PAGES: Record<string, PageDef> = {
         heading: 'Payment',
         bullets: [
           'How can I pay? Card, bank transfer or USSD, through our payment processor.',
-          'Is there a service fee? No. You pay the menu price plus the vendor’s delivery fee.',
+          'Is there a service fee? Yes, ₦100 per order, shown on the menu. It covers payment processing. Menu prices have no markup.',
           'Does Sare hold my money? No. Payments are split by the processor; Sare never holds customer or vendor funds.',
           'Can I cancel? Yes, for a full refund, until the vendor accepts.',
         ],
@@ -379,7 +379,7 @@ export const PAGES: Record<string, PageDef> = {
       {
         heading: 'Vendors',
         bullets: [
-          'What does Sare cost? 5% of each order, minimum ₦200, taken inside the payment split.',
+          'What does Sare cost vendors? 5% of the food bill, minimum ₦200, taken inside the payment split.',
           'When do I get paid? On the payment processor’s settlement schedule, straight to your bank. You get an SMS each morning a settlement was sent.',
           'What do I need to sign up? Your phone number, BVN and a bank account in your name.',
         ],

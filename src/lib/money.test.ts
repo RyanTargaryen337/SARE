@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { commissionKobo, nairaToKobo, orderChargeNaira, vendorNetNaira } from './money';
+import { bookingFeeKobo, commissionKobo, nairaToKobo, orderChargeNaira, vendorNetNaira } from './money';
 
-describe('commissionKobo (5%, minimum ₦200)', () => {
+describe('commissionKobo (5% of the food bill, minimum ₦200)', () => {
   it.each([
     // [order total ₦, expected fee ₦]
     [0, 0], // the minimum is capped at the order total
@@ -28,20 +28,26 @@ describe('commissionKobo (5%, minimum ₦200)', () => {
   });
 });
 
-describe('order charge and vendor net', () => {
+describe('order charge, vendor net and booking fee (pre-seed deck pricing)', () => {
   // service and small-order fees exist in the sim's fee object but are never charged
   const order = { subtotal: 6_000, fees: { delivery: 1_000, service: 300, small: 300, total: 1_600 } };
 
-  it('charges menu price plus the vendor delivery fee only', () => {
-    expect(orderChargeNaira(order)).toBe(7_000);
+  it('charges menu price, delivery fee and the ₦100 service fee', () => {
+    expect(orderChargeNaira(order)).toBe(7_100);
   });
 
-  it('takes 5% of food plus delivery (regression: commission was on food only)', () => {
-    expect(vendorNetNaira(order)).toBe(6_650); // 7,000 − 350
+  it('takes 5% of the food bill only, not the delivery fee', () => {
+    expect(vendorNetNaira(order)).toBe(5_700); // 6,000 − 300
   });
 
-  it('applies the ₦200 minimum to the full charge and never goes negative', () => {
-    expect(vendorNetNaira({ subtotal: 2_000, fees: { delivery: 500 } })).toBe(2_300);
-    expect(vendorNetNaira({ subtotal: 150, fees: { delivery: 0 } })).toBe(0);
+  it('applies the ₦200 minimum to the food bill and never goes negative', () => {
+    expect(vendorNetNaira({ subtotal: 3_000 })).toBe(2_800);
+    expect(vendorNetNaira({ subtotal: 150 })).toBe(0);
+  });
+
+  it('charges partner riders 5% of the delivery fee', () => {
+    expect(bookingFeeKobo(nairaToKobo(2_000))).toBe(nairaToKobo(100));
+    expect(bookingFeeKobo(0)).toBe(0);
+    expect(() => bookingFeeKobo(-1)).toThrow(RangeError);
   });
 });

@@ -22,10 +22,11 @@ This repo is an interactive demo: every order, rider and payout is simulated in 
 Vendors, areas, riders and every pricing constant live in `src/lib/data.ts`:
 
 - Delivery: ₦500 base + ₦120/km, free over ₦15,000
-- Service fee: 5% of subtotal, capped at ₦500 (illustrative Phase 2 constant; the demo checkout charges only the menu price plus the vendor's delivery fee)
+- Service fee in `data.ts`: 5% of subtotal, capped at ₦500 (illustrative Phase 2 constant, not charged; the demo checkout charges a flat ₦100 service fee from `src/lib/money.ts`)
 - Surge: ×1.25 (illustrative Phase 2 constant; the sim and pilot apply no surge)
 - Small order fee: ₦300 under ₦2,000 (illustrative Phase 2 constant; not charged in the demo checkout)
-- Vendor commission: 5% of the full charge (food plus the vendor's delivery fee), ₦200 minimum, never more than the order total (`src/lib/money.ts`)
+- Vendor commission: 5% of the food bill, ₦200 minimum, never more than the food bill (`src/lib/money.ts`)
+- Customer service fee: ₦100 per order; partner-rider booking fee: 5% of the delivery fee (vendors' own riders pay nothing)
 - Rider pay: ₦150/km + ₦400 per drop
 
 ## Development

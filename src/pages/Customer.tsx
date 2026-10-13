@@ -6,6 +6,7 @@ import { AREAS, VENDORS, naira, gridToKm, dist, deliveryFee } from '../lib/data'
 const _a = (id: string) => AREAS.find((x) => x.id === id)!;
 import { useSim, type Order } from '../lib/useSim';
 import LagosMap from '../components/LagosMap';
+import { koboToNaira, orderChargeNaira, SERVICE_FEE_KOBO } from '../lib/money';
 
 const ease = [0.23, 0.34, 0.18, 1] as const;
 
@@ -122,9 +123,9 @@ export default function Customer() {
               <div className="mt-3 space-y-1 border-t hairline pt-3 text-sm">
                 <Row l="Subtotal" r={naira(placed.subtotal)} />
                 <Row l={`Vendor delivery fee (${placed.km.toFixed(1)} km)`} r={placed.fees.delivery === 0 ? 'FREE' : naira(placed.fees.delivery)} />
-                <Row l="Sare fee" r="paid by vendor" />
+                <Row l="Service fee" r={naira(koboToNaira(SERVICE_FEE_KOBO))} />
                 <div className="flex justify-between pt-2 font-display text-base font-bold text-cream">
-                  <span>Total</span><span>{naira(placed.subtotal + placed.fees.delivery)}</span>
+                  <span>Total</span><span>{naira(orderChargeNaira(placed))}</span>
                 </div>
               </div>
             </div>
@@ -222,14 +223,14 @@ export default function Customer() {
 
               {/* checkout */}
               <div className="panel mt-6 p-5">
-                <p className="mono-label mb-3">CHECKOUT · MENU PRICE + DELIVERY, NOTHING ELSE</p>
+                <p className="mono-label mb-3">CHECKOUT · MENU PRICE + DELIVERY + ₦100 SERVICE FEE</p>
                 <div className="space-y-1 text-sm">
                   <Row l="Subtotal" r={naira(subtotal)} />
                   <Row l={`Vendor delivery fee to ${_a(areaId).name} (${km.toFixed(1)} km)`}
                     r={subtotal === 0 ? '—' : fees.delivery === 0 ? 'FREE' : naira(fees.delivery)} />
-                  <Row l="Sare fee" r="paid by vendor" />
+                  <Row l="Service fee" r={subtotal === 0 ? '—' : naira(koboToNaira(SERVICE_FEE_KOBO))} />
                   <div className="flex justify-between border-t hairline pt-3 font-display text-lg font-bold text-cream">
-                    <span>Total</span><span>{naira(subtotal + fees.delivery)}</span>
+                    <span>Total</span><span>{subtotal === 0 ? naira(0) : naira(orderChargeNaira({ subtotal, fees }))}</span>
                   </div>
                 </div>
                 <button onClick={submit} disabled={!cartItems.length}

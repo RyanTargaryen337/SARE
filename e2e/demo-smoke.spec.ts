@@ -104,8 +104,7 @@ test('a customer order reaches the tracker', async ({ page }) => {
   const errors = trackErrors(page);
   await page.goto('/#/order');
   await page.getByRole('button', { name: /^Add / }).first().click();
-  await expect(page.locator('main')).toContainText('paid by vendor');
-  await expect(page.locator('main')).not.toContainText('Service fee');
+  await expect(page.locator('main')).toContainText('Service fee₦100');
   await page.getByRole('button', { name: /Place order/ }).click();
   await expect(page.locator('main')).toContainText(/SR-\d+/);
   expect(errors).toEqual([]);
