@@ -8,7 +8,7 @@ This repo is an interactive demo: every order, rider and payout is simulated in 
 
 | View | File | What it shows |
 | --- | --- | --- |
-| Home | `src/pages/Landing.tsx` | Hero, live Lagos map, order ticker |
+| Home | `src/pages/Landing.tsx` | Location-first hero with a modal location picker, category shortcuts, simulated Lagos network map |
 | Order | `src/pages/Customer.tsx` | Browse vendors, checkout with fee breakdown, live tracking |
 | Vendor | `src/pages/Vendor.tsx` | Incoming order queue: accept, reject, mark ready |
 | Rider | `src/pages/Rider.tsx` | Claim, pick up and deliver runs; earnings |
@@ -22,10 +22,11 @@ This repo is an interactive demo: every order, rider and payout is simulated in 
 Vendors, areas, riders and every pricing constant live in `src/lib/data.ts`:
 
 - Delivery: ₦500 base + ₦120/km, free over ₦15,000
-- Service fee: 5% of subtotal, capped at ₦500
-- Surge: ×1.25
-- Small order fee: ₦300 under ₦2,000
-- Vendor commission: 20% (Growth tier)
+- Service fee in `data.ts`: 5% of subtotal, capped at ₦500 (illustrative Phase 2 constant, not charged; the demo checkout charges a flat ₦100 service fee from `src/lib/money.ts`)
+- Surge: ×1.25 (illustrative Phase 2 constant; the sim and pilot apply no surge)
+- Small order fee: ₦300 under ₦2,000 (illustrative Phase 2 constant; not charged in the demo checkout)
+- Vendor commission: 5% of the food bill, ₦200 minimum, never more than the food bill (`src/lib/money.ts`)
+- Customer service fee: ₦100 per order; partner-rider booking fee: 5% of the delivery fee (vendors' own riders pay nothing)
 - Rider pay: ₦150/km + ₦400 per drop
 
 ## Development
@@ -37,6 +38,18 @@ npm ci
 npm run dev      # start the dev server
 npm run build    # typecheck and build to dist/
 npm run lint
+npm test         # Vitest unit tests (sim, commission, routes, discovery, pages, components)
+npm run test:e2e # Playwright smoke tests (builds, then serves on :4173)
 ```
+
+Pages live at hash routes: `#/vendor`, `#/page/<slug>` (content in `src/lib/pages.ts`),
+`#/near/<category>` and `#/city/<place>` (lists in `src/lib/discovery.ts`). Route parsing
+(`src/lib/routes.ts`) ignores a `?query`, an inner `#fragment` and trailing slashes, and
+unknown routes fall back to Home. Page copy must match the approved plan in
+`docs/designs/sare-platform.md`.
+
+The riders page (`#/page/riders`) has an Apply section. Set `VITE_RIDER_TYPEFORM_ID` to a Typeform
+form ID (for example in `.env.local`) to embed the application form. Without it, the page shows a
+readiness checklist that stays in the browser and sends nothing.
 
 Built with React 19, TypeScript, Vite, Tailwind CSS 3, shadcn/ui and Framer Motion.

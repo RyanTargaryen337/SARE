@@ -178,7 +178,7 @@ export default function Rider() {
                 <span className="text-cream-dim">{l}</span><span className="font-mono text-cream">{r}</span>
               </div>
             ))}
-            <p className="mono-label mt-3">TOP RIDERS AVERAGE ~₦100,000 / WEEK</p>
+            <p className="mono-label mt-3">DEMO RATES FOR ILLUSTRATION · NOT AN OFFER</p>
           </div>
         </div>
       </div>

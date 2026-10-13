@@ -18,3 +18,10 @@ Key routing rules:
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
 - Author a backlog-ready spec/issue → invoke /spec
+
+## Testing
+
+- Unit: `npm test` (Vitest, jsdom; files `src/**/*.test.{ts,tsx}`)
+- E2E smoke: `npm run test:e2e` (Playwright; builds, serves on :4173; uses `/opt/pw-browsers/chromium` in cloud containers)
+- Lint/build: `npm run lint`, `npm run build`
+- Write a regression test with every bug fix; never commit failing tests.

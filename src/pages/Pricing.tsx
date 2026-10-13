@@ -12,6 +12,13 @@ const fade = (i: number) => ({
 export default function Pricing() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
+      <div role="note" className="mb-8 flex gap-3 rounded-xl border border-ember/50 bg-ember/10 p-4 text-sm text-cream">
+        <Info size={18} className="mt-0.5 shrink-0 text-ember" />
+        <p>
+          <span className="font-semibold">Illustrative Phase 2 marketplace model, not today's vendor offer.</span>{' '}
+          Today vendors pay 5% of the food bill (minimum ₦200), taken inside the payment split, and customers pay the menu price, the delivery fee and a ₦100 service fee.
+        </p>
+      </div>
       <p className="mono-label">MONETIZATION MODEL · BENCHMARKED ON THE NIGERIAN MARKET</p>
       <h1 className="mt-2 max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight text-cream md:text-5xl">
         Four revenue streams. Priced so every side of the market wins.
@@ -114,7 +121,6 @@ export default function Pricing() {
             {[
               ['Meal allowance', `${naira(PRICING.riderMonthlyBonus)}/mo at 300 deliveries`],
               ['Sunday streak', `${naira(PRICING.riderSundayBonus)} per Sunday worked`],
-              ['Top riders', '~₦100,000 / week total'],
             ].map(([l, r]) => (
               <div key={l} className="flex justify-between border-b hairline py-2 text-sm last:border-0">
                 <span className="text-cream-dim">{l}</span><span className="font-mono text-cream">{r}</span>

@@ -14,3 +14,15 @@
 ## Deferred by /plan-eng-review (2026-10-10)
 
 - **Re-tune OTP limits and alert thresholds with live data (D18).** After 2 weeks of live Phase 1 traffic, compare blocked-OTP counts and alert counts with real usage and reset the config values from D7 (1 OTP/60 s and 5/24 h per number, 10/h per IP, ₦20,000 daily SMS cap) and D12 (>5 webhook signature failures/h, SMS spend >2× 7-day average). Why: they are starting guesses; a tight IP limit blocks customers on shared carrier IPs silently. Effort S (values are config). Depends on: Phase 1 live for 2 weeks.
+
+## Phase 1 backend (deferred from /ship plan gate, 2026-10-10)
+
+Deferred from plan: docs/designs/sare-platform-eng-review.md. Start after Gate 0 passes (5 vendors committed, processor checks (a)–(f)). Each item lists its verify step in the plan file.
+
+- **T7: Supabase schema with RLS.** Per-table pgTAP tests, private storage bucket, status-token RPC. Verify: `supabase test db` cross-vendor tests pass. **Priority:** P1
+- **T8: processor_events and webhook idempotency.** Verify: a duplicate or out-of-order webhook changes the ledger once. **Priority:** P1
+- **T9: pg_cron sweep_timers, jobs table, drain function, heartbeats.** Verify: pgTAP timer boundary tests; accept-vs-timeout E2E. **Priority:** P1
+- **T10: OTP limits, spend cap, resend and voice fallback.** Verify: a unit test per limit, the cap stops sends, voice is offered on the 2nd resend. **Priority:** P1
+- **T11: append-only audit_log and founder action function.** Verify: pgTAP UPDATE/DELETE fail; the action and its log row commit together. **Priority:** P1
+- **T12: observability.** order_events, metric views, 5 alerts, runbooks. Verify: each threshold raises exactly one alert in tests. **Priority:** P1
+- **T13: reconciliation by processor reference plus batch total check.** **Priority:** P1

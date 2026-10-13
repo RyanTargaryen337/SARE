@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BellRing, Check, X, Flame, Wallet, TrendingUp, ClipboardList } from 'lucide-react';
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
-import { VENDORS, AREAS, naira, PRICING } from '../lib/data';
+import { VENDORS, AREAS, naira } from '../lib/data';
+import { commissionKobo, koboToNaira, nairaToKobo, vendorNetNaira } from '../lib/money';
 import { useSim } from '../lib/useSim';
+import Sparkline from '../components/Sparkline';
 
 const ease = [0.23, 0.34, 0.18, 1] as const;
 // The hub runs as "Jollof Junction" (v3)
@@ -19,7 +20,8 @@ export default function Vendor() {
   const incoming = mine.filter((o) => o.state === 'incoming');
   const doneToday = 214 + sim.orders.filter((o) => o.vendorId === MY_VENDOR && o.state === 'delivered').length;
   const gross = 812400;
-  const commission = gross * PRICING.vendorCommission;
+  // Demo figure: today's orders at the average food bill, each charged 5% with the ₦200 minimum.
+  const commission = koboToNaira(doneToday * commissionKobo(nairaToKobo(Math.round(gross / doneToday))));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -39,7 +41,7 @@ export default function Vendor() {
         {[
           { icon: <ClipboardList size={15} />, k: String(doneToday), v: 'orders today' },
           { icon: <Wallet size={15} />, k: naira(gross), v: 'gross sales today' },
-          { icon: <TrendingUp size={15} />, k: naira(gross - commission), v: 'net after 20% commission' },
+          { icon: <TrendingUp size={15} />, k: naira(gross - commission), v: 'net after Sàrè fee (5% of food, min ₦200/order)' },
           { icon: <Flame size={15} />, k: '8 min', v: 'avg prep time' },
         ].map((s) => (
           <div key={s.v} className="panel p-4">
@@ -89,7 +91,7 @@ export default function Vendor() {
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t hairline pt-3">
                   <span className="font-mono text-sm text-cream-dim">
-                    {naira(o.subtotal)} <span className="text-cream-dim/60">(you net {naira(o.subtotal * (1 - PRICING.vendorCommission))})</span>
+                    {naira(o.subtotal)} <span className="text-cream-dim/60">(you net {naira(vendorNetNaira(o))})</span>
                   </span>
                   <div className="flex gap-2">
                     {o.state === 'incoming' && (
@@ -133,37 +135,26 @@ export default function Vendor() {
           <div className="panel p-5">
             <p className="mono-label mb-2">SALES THIS WEEK (₦ THOUSAND)</p>
             <div className="h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sales} margin={{ top: 6, right: 0, left: -22, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F95E2C" stopOpacity={0.5} />
-                      <stop offset="100%" stopColor="#F95E2C" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="d" tick={{ fill: '#B8AC9C', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#B8AC9C', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: '#022F2A', border: '1px solid #1a3f35', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 12 }}
-                    labelStyle={{ color: '#E9DFD3' }} itemStyle={{ color: '#F95E2C' }} formatter={(v) => [`₦${v}k`, 'sales']} />
-                  <Area type="monotone" dataKey="v" stroke="#F95E2C" strokeWidth={2} fill="url(#sg)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Sparkline
+                data={sales.map((s) => ({ label: s.d, value: s.v }))}
+                summary={`Sales this week in thousand naira: ${sales.map((s) => `${s.d} ${s.v}`).join(', ')}.`}
+              />
             </div>
           </div>
 
           <div className="panel p-5">
-            <p className="mono-label mb-3">PAYOUT · DAILY SETTLEMENT</p>
+            <p className="mono-label mb-3">PAYOUT · PROCESSOR SETTLEMENT</p>
             {[
-              ['Gross sales', naira(gross)],
-              [`Commission (20%)`, `−${naira(commission)}`],
+              ['Food sales', naira(gross)],
+              ['Sàrè fee (5% of food, min ₦200/order)', `−${naira(commission)}`],
               ['Net payout', naira(gross - commission)],
-              ['Next settlement', 'Tonight, 11:59 PM'],
+              ['Next settlement', "Processor's next run"],
             ].map(([l, r]) => (
               <div key={l} className="flex justify-between border-b hairline py-2 text-sm last:border-0">
                 <span className="text-cream-dim">{l}</span><span className="font-mono text-cream">{r}</span>
               </div>
             ))}
-            <p className="mono-label mt-3">PAID TO GTB •••• 4821 · SAME-DAY</p>
+            <p className="mono-label mt-3">SENT BY THE PROCESSOR TO GTB •••• 4821 · SARE NEVER HOLDS YOUR MONEY</p>
           </div>
 
           <div className="panel p-5">
